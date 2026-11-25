@@ -1,6 +1,10 @@
 # Response headers for every file here (Cloudflare reads this file; measurements/serve.mjs applies it locally).
 # HTML, crawl files, icons and the share image keep the default caching (public, max-age=0, must-revalidate, ETag).
-# The page runs no script and loads nothing from another origin, so the policy denies by default.
+# The page runs no script of its own (its one <script> is JSON-LD, which is data) and loads nothing from another origin,
+# so the policy denies by default. Its one opening is Cloudflare Web Analytics: the zone adds the beacon at the edge, so it
+# is not in index.html and never runs locally. script-src is the beacon's host. connect-src is where it reports: this
+# host's /cdn-cgi/rum (seen on the live site, 2026-11-25) and cloudflareinsights.com (Cloudflare's CSP guide).
+# Drop both if Web Analytics is turned off for the zone.
 # style-src stays 'self': the page's one <style> block is allowed by its sha256, which the publish step adds
 # (it hashes the block as shipped, so an edit can never go out with a stale hash). The 404 page's styles are a file.
 # img-src keeps data: for the crease map inside the page's #warp filter and the torn edge mask in the 404 styles.
@@ -8,7 +12,7 @@
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'none'; script-src 'none'; img-src 'self' data:; style-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self' data:; style-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests
   X-Frame-Options: DENY
   Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), sync-xhr=(), usb=(), xr-spatial-tracking=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
