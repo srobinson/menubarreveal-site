@@ -5,7 +5,7 @@
 //   npm run deploy -- --live       the same checks, then https://menubarreveal.com and the www redirect, then a smoke check
 // Order: lint with the facts check and the style hash, the product facts, a clean git tree, wrangler, smoke check.
 // It stops at the first step that fails, and it changes no file here: a stale style hash is named by lint, not rewritten. Wrangler uses the logged in Cloudflare account (`npx wrangler login`).
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { root, siteFiles, withNoindex } from './site.mjs';
@@ -28,7 +28,16 @@ const step = async (name, fn) => {
   console.log(`\ndeploy: == ${name}`);
   try { return await fn(); } catch (error) { return stop(`"${name}" failed (${error.message.split('\n')[0]})`); }
 };
-const wrangler = (...args) => run('npx', 'wrangler', 'deploy', ...args);
+// Wrangler never gets a terminal: its input is closed and its output comes through a pipe. Given a terminal it stops
+// to ask before it moves a host that another Worker holds; without one it makes the hosts match the config, as in CI,
+// so a run cannot hang on a question.
+const wrangler = (...args) => new Promise((done, failed) => {
+  const child = spawn('npx', ['wrangler', 'deploy', ...args], { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] });
+  child.stdout.pipe(process.stdout, { end: false });
+  child.stderr.pipe(process.stderr, { end: false });
+  child.on('error', failed);
+  child.on('close', (code) => (code === 0 ? done() : failed(new Error(`npx wrangler deploy ${args.join(' ')} exited ${code}`))));
+});
 
 await step('lint, the facts check and the style hash in _headers (npm run lint)', () => run('npm', 'run', '--silent', 'lint'));
 await step('the product facts against the product repo (tools/product-facts.mjs)', () => run('node', 'tools/product-facts.mjs'));

@@ -73,7 +73,7 @@ Each mode runs the same steps in order and stops at the first that fails:
 1. `npm run lint`, which also fails on a stale style hash in `_headers` and says how to fix it. The deploy changes no file in this folder.
 2. `tools/product-facts.mjs` reads the app's repo and checks four facts the site states against it: no default shortcut, the minimum macOS, the price, and the download URL of the current release.
 3. For a real deploy, the git tree must be clean: what goes up is a commit.
-4. Wrangler uploads a copy of the tracked files minus the dev files. The preview copy gains one header, `X-Robots-Tag: noindex, nofollow`; the live copy is untouched.
+4. Wrangler uploads a copy of the tracked files minus the dev files. The preview copy gains one header, `X-Robots-Tag: noindex, nofollow`; the live copy is untouched. Wrangler is run without a terminal, so it never stops to ask: the Workers' hosts are made to match the two `wrangler.toml` files.
 5. A smoke check of the served site: `/` is this `index.html` byte for byte, the policy header is the one in `_headers`, `/index.html` redirects, a missing path is a 404, and on the live site `http://` and `www` answer 301 to the apex.
 
 A run that stops names the step that failed, removes the copy it made for wrangler, and says whether the live deploy had started.
