@@ -1,0 +1,25 @@
+/* The 404 page's styles, in a file so the strict CSP (style-src 'self') applies to it with no hash. */
+@font-face{font-family:Anton;src:url(/assets/fonts/Anton-400.woff2) format('woff2');font-display:swap}
+@font-face{font-family:'Special Elite';src:url(/assets/fonts/SpecialElite-400.woff2) format('woff2');font-display:swap}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#6f6a62;color:#191613}
+body{min-height:100svh}
+/* the launch wall tile, in the same two resolutions as the home page */
+.wall{position:relative;min-height:100svh;display:grid;place-items:center;padding:56px 16px 72px;overflow:hidden;isolation:isolate;
+  background:url(/assets/404/wall-520.webp) 0 0/520px 520px;
+  background-image:image-set(url(/assets/404/wall-520.webp) 1x,url(/assets/404/wall-1040.webp) 2x)}
+/* one sheet pasted slightly crooked, its bottom edge torn away */
+.sheet{position:relative;width:min(88vw,460px);transform:rotate(-1.4deg);filter:drop-shadow(0 2px 2px rgba(0,0,0,.35)) drop-shadow(0 14px 22px rgba(0,0,0,.25))}
+.paper{position:relative;padding:44px 32px 64px;background:#f5eedc;text-align:center;
+  /* torn bottom edge: a noise displaced mask, straight cut top and sides */
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 420' preserveAspectRatio='none'%3E%3Cfilter id='t' x='-10%' y='-10%' width='120%' height='120%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035 .09' numOctaves='4' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='26' yChannelSelector='G'/%3E%3C/filter%3E%3Crect x='-40' y='-40' width='540' height='436' filter='url(%23t)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 420' preserveAspectRatio='none'%3E%3Cfilter id='t' x='-10%' y='-10%' width='120%' height='120%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035 .09' numOctaves='4' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='26' yChannelSelector='G'/%3E%3C/filter%3E%3Crect x='-40' y='-40' width='540' height='436' filter='url(%23t)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
+.paper::after{content:"";position:absolute;inset:0;background:url(/assets/404/crease-c.webp) 0 0/100% 100%;mix-blend-mode:hard-light;opacity:.4;pointer-events:none}
+h1{font:400 clamp(112px,34vw,184px)/.84 Anton,Impact,sans-serif;letter-spacing:-.01em;color:#d1281b}
+p{margin-top:18px;font:400 clamp(20px,5.4vw,26px)/1.2 'Special Elite','Courier New',monospace}
+/* the sticker, slapped across the sheet's corner */
+.sticker{position:absolute;top:-30px;right:-22px;width:76px;height:76px;transform:rotate(9deg);filter:drop-shadow(0 0 0 #fff) drop-shadow(0 3px 4px rgba(0,0,0,.35));border-radius:22%;background:#fff;padding:4px}
+.sticker img{display:block;width:100%;height:100%}
+/* the way home, a strip pasted under the sheet */
+.home{display:inline-block;margin-top:28px;padding:12px 18px;min-height:48px;background:#191613;color:#f5eedc;font:400 22px/1 Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;text-decoration:none;transform:rotate(1.2deg)}
+.home:hover{background:#d1281b}
+.home:focus-visible{outline:3px solid #f5eedc;outline-offset:3px;box-shadow:0 0 0 6px #191613}

@@ -1,0 +1,8 @@
+# Menu Bar Reveal
+
+> By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.
+
+## Links
+
+- [Product facts](https://menubarreveal.com/index.md)
+- [Menu Bar Reveal on GitHub](https://github.com/srobinson/menubar-reveal)
