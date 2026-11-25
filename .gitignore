@@ -3,3 +3,4 @@ node_modules/
 .wrangler/
 .preview/
 .deploy/
+tools/mural/masters/

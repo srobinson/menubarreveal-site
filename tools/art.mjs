@@ -19,9 +19,11 @@ const DIR = 'assets/art';
 // name: the custom properties, --name and --name-preview. files: plain names; two files make an image-set, 1x and 2x.
 // To have a picture encoded here, add master (a lossless file, not committed), widths (one per file) and encode
 // (Eleventy Image options, such as { sharpAvifOptions: { quality: 50 } }).
+// The wall: Sharp's AVIF at quality 50, from the masters that tools/mural/art.sh paints.
+const MURAL = { sharpAvifOptions: { quality: 50, effort: 4 } };
 const PICTURES = [
-  { name: 'mural-phone', files: ['mural-strip-692.avif', 'mural-strip-1384.avif'] },
-  { name: 'mural-wide', files: ['mural-sun450-1440.avif', 'mural-sun450-2880.avif'] },
+  { name: 'mural-phone', files: ['mural-strip-692.avif', 'mural-strip-1384.avif'], master: 'tools/mural/masters/mural-strip-1384.png', widths: [692, 1384], encode: MURAL },
+  { name: 'mural-wide', files: ['mural-sun450-1440.avif', 'mural-sun450-2880.avif'], master: 'tools/mural/masters/mural-sun450-2880.png', widths: [1440, 2880], encode: MURAL },
   { name: 'relief', files: ['wall-relief.webp'] },
   { name: 'plate', files: ['plate.webp'] },
   { name: 'crease', files: ['crease-flyer.webp'] },
