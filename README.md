@@ -26,6 +26,7 @@ The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one
 | `tools/check.mjs`, `tools/csp.mjs` | The checks behind `npm run lint`, and the style hash in `_headers`. |
 | `tools/deploy.mjs`, `tools/product-facts.mjs`, `wrangler.toml`, `www-redirect/` | The deploy step, its check against the app's own repo, and the Cloudflare configuration for the site and the `www` redirect. |
 | `tools/serve.mjs` | The site on your machine, with its real headers. |
+| `tools/site.mjs` | What those tools share: which files are the site (`.assetsignore`) and which headers a path gets (`_headers`). |
 | `tools/mural/` | The painter the wall came from, and the script that remakes its pictures. |
 | `package.json`, `package-lock.json`, `.browserslistrc`, `.htmlvalidate.json`, `.stylelintrc.json`, `.github/` | Lint: its tools, its settings, and the workflow that runs it on every push. |
 | `LICENSE`, `NOTICE`, `README.md` | The licence, what it does not cover, and this file. |

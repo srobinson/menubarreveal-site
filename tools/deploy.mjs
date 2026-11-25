@@ -8,9 +8,8 @@
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { root, siteFiles, withNoindex } from './site.mjs';
 
-const root = fileURLToPath(new URL('../', import.meta.url));
 const mode = process.argv[2] ?? '--dry-run';
 if (!['--dry-run', '--preview', '--live'].includes(mode)) { console.error('usage: npm run deploy [-- --preview | -- --live]'); process.exit(2); }
 const HOSTS = { '--preview': 'https://preview.menubarreveal.com', '--live': 'https://menubarreveal.com' };
@@ -32,19 +31,13 @@ if (mode !== '--dry-run') step('a clean git tree: what goes up is a commit', () 
 // What goes up is a copy of the tracked files minus the dev files in .assetsignore: wrangler is pointed at that copy
 // (.deploy/, or .preview/ with noindex), never at the repo root, so node_modules and the tools cannot be uploaded.
 const copySite = (to, { noindex = false } = {}) => {
-  const ignored = readFileSync(join(root, '.assetsignore'), 'utf8').split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
-  const files = out('git', 'ls-files').split('\n').filter((f) => f && !ignored.includes(f.split('/')[0]));
+  const files = siteFiles();
   rmSync(join(root, to), { recursive: true, force: true });
   for (const file of files) {
     mkdirSync(dirname(join(root, to, file)), { recursive: true });
     cpSync(join(root, file), join(root, to, file));
   }
-  if (noindex) {
-    // one site wide X-Robots-Tag; the per path ones go, so no response joins two values
-    const headers = readFileSync(join(root, to, '_headers'), 'utf8').replace(/^[ \t]+X-Robots-Tag:.*\n/gim, '').replace(/^\/\*\n/m, '/*\n  X-Robots-Tag: noindex, nofollow\n');
-    if (!headers.includes('/*\n  X-Robots-Tag: noindex, nofollow\n')) stop('could not add noindex to the preview headers');
-    writeFileSync(join(root, to, '_headers'), headers);
-  }
+  if (noindex) writeFileSync(join(root, to, '_headers'), withNoindex(readFileSync(join(root, to, '_headers'), 'utf8')));
   console.log(`${to}/: ${files.length} files`);
 };
 

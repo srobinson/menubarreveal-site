@@ -1,5 +1,6 @@
 # Dev files: everything else in this folder is the site. tools/deploy.mjs leaves these out of what it uploads, and
-# tools/serve.mjs does not serve them.
+# tools/serve.mjs does not serve them. One path per line, from the root: a file, or a folder and everything in it.
+# No patterns: the tools stop at a line they would have to guess at.
 .git
 .github
 .gitignore

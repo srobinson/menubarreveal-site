@@ -5,22 +5,14 @@
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { headerRules, headersFor, isDevFile, root } from './site.mjs';
 
-const root = fileURLToPath(new URL('../', import.meta.url));
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.md': 'text/markdown; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.png': 'image/png',
   '.jpg': 'image/jpeg', '.webp': 'image/webp', '.avif': 'image/avif', '.woff2': 'font/woff2' };
-const lines = (file) => readFileSync(join(root, file), 'utf8').split('\n').filter((line) => line.trim() && !line.startsWith('#'));
-const ignored = [...lines('.assetsignore').map((line) => line.trim()), '_headers', '_redirects'];
-const redirects = lines('_redirects').map((line) => line.trim().split(/\s+/)); // from, to, status
-// _headers: a path pattern on its own line, then its indented "Name: value" lines
-const rules = [];
-for (const line of lines('_headers')) {
-  if (!/^\s/.test(line)) rules.push({ pattern: line.trim(), headers: [] });
-  else rules.at(-1).headers.push([line.slice(0, line.indexOf(':')).trim(), line.slice(line.indexOf(':') + 1).trim().replace(/;\s*upgrade-insecure-requests/, '')]);
-}
-const matches = (pattern, path) => (pattern.endsWith('*') ? path.startsWith(pattern.slice(0, -1)) : path === pattern);
+const hidden = (path) => isDevFile(path) || ['_headers', '_redirects'].includes(path); // Cloudflare reads those two; it does not serve them
+const redirects = readFileSync(join(root, '_redirects'), 'utf8').split('\n').filter((line) => line.trim() && !line.startsWith('#')).map((line) => line.trim().split(/\s+/)); // from, to, status
+const rules = headerRules();
 
 const server = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
@@ -28,9 +20,9 @@ const server = createServer((req, res) => {
   if (moved) return res.writeHead(+moved[2], { Location: moved[1] }).end();
   let file = normalize(join(root, path.endsWith('/') ? path + 'index.html' : path));
   let status = 200;
-  if (!file.startsWith(root) || ignored.includes(path.split('/')[1]) || !existsSync(file) || !statSync(file).isFile()) { status = 404; file = join(root, '404.html'); }
+  if (!file.startsWith(root) || hidden(path.slice(1)) || !existsSync(file) || !statSync(file).isFile()) { status = 404; file = join(root, '404.html'); }
   const headers = { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream', 'Cache-Control': 'public, max-age=0, must-revalidate' };
-  for (const rule of rules) if (matches(rule.pattern, path)) for (const [name, value] of rule.headers) headers[name] = value;
+  for (const [name, value] of headersFor(rules, path)) headers[name] = value.replace(/;\s*upgrade-insecure-requests/, '');
   res.writeHead(status, headers).end(readFileSync(file));
 });
 server.listen(+(process.argv[2] ?? 8080), '127.0.0.1', () => console.log(`http://127.0.0.1:${server.address().port}/`));
