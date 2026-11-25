@@ -1,6 +1,6 @@
 # Menu Bar Reveal
 
-> A free, open source Mac app. Press your keyboard shortcut and the hidden menu bar comes down. Press it again and it goes back up.
+> A free, open source Mac app. Press your keyboard shortcut to show the hidden menu bar. It stays until the same shortcut hides it.
 
 ## Links
 
