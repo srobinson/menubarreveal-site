@@ -76,6 +76,8 @@ Each mode runs the same steps in order and stops at the first that fails:
 4. Wrangler uploads a copy of the tracked files minus the dev files. The preview copy gains one header, `X-Robots-Tag: noindex, nofollow`; the live copy is untouched.
 5. A smoke check of the served site: `/` is this `index.html` byte for byte, the policy header is the one in `_headers`, `/index.html` redirects, a missing path is a 404, and on the live site `http://` and `www` answer 301 to the apex.
 
+A run that stops names the step that failed, removes the copy it made for wrangler, and says whether the live deploy had started.
+
 Run the preview first, look at it, then go live.
 
 ### Roll back
