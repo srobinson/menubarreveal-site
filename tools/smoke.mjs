@@ -68,11 +68,13 @@ export const smoke = async (mode) => {
   check('og.jpg returns 200', get(`${host}/og.jpg`).status === 200);
   check('a missing path returns 404', get(`${host}/no-such-page`).status === 404);
   redirect(`${host}/index.html?q=1`, `${host}/?q=1`);
+  // On the preview too: a crawler that robots.txt turns away never reads the noindex, and the address can still be indexed.
+  const robots = get(`${host}/robots.txt`).body;
+  check('robots.txt allows crawling', /^Allow: \/$/m.test(robots) && !/^Disallow: \/$/m.test(robots));
   if (mode === '--preview') check('every response says noindex', /noindex/i.test(robotsTag));
   else {
     check('the home page does not say noindex', !/noindex/i.test(robotsTag));
-    const robots = get(`${host}/robots.txt`).body;
-    check('robots.txt allows all and names the sitemap', /^Allow: \/$/m.test(robots) && !/^Disallow: \/$/m.test(robots) && robots.includes(`Sitemap: ${host}/sitemap.xml`));
+    check('robots.txt names the sitemap', robots.includes(`Sitemap: ${host}/sitemap.xml`));
     check('sitemap.xml returns 200', get(`${host}/sitemap.xml`).status === 200);
     redirect('http://menubarreveal.com/', `${host}/`);
     redirect('https://www.menubarreveal.com/', `${host}/`);
