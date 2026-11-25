@@ -14,7 +14,7 @@ The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one
 | `404.html`, `assets/404/` | The page for a missing address, its styles and pictures. |
 | `favicon.ico`, `favicon.svg`, `favicon-96.png`, `apple-touch-icon.png` | Icons. |
 | `og.jpg` | The share image: the page's first screen at 1200x630. |
-| `index.md`, `llms.txt` | The product facts as Markdown, for agents. |
+| `index.md`, `llms.txt` | The product facts as Markdown, for agents. The home page answers with `index.md` when a client asks for Markdown (below, "Markdown at the home page"). |
 | `robots.txt`, `sitemap.xml` | For crawlers. |
 | `_headers`, `_redirects` | Response headers, the Content Security Policy among them; and one redirect, `/index.html` to `/`. |
 
@@ -25,8 +25,9 @@ The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one
 | `facts.json` | The product facts, once. Every copy of a fact in the site is checked against it. |
 | `tools/check.mjs`, `tools/csp.mjs` | The checks behind `npm run lint`, and the style hash in `_headers`. |
 | `tools/deploy.mjs`, `tools/product-facts.mjs`, `wrangler.toml`, `www-redirect/` | The deploy step, its check against the app's own repo, and the Cloudflare configuration for the site and the `www` redirect. |
+| `worker.mjs` | The one script Cloudflare runs, and only for `/`: it picks the page or `index.md` by the request's `Accept` header. |
 | `tools/smoke.mjs` | The check of the served site against this folder: the deploy's last step, and a command of its own. |
-| `tools/serve.mjs` | The site on your machine, with its real headers. |
+| `tools/serve.mjs` | The site on your machine, with its real headers, and `worker.mjs` answering `/` as it does live. |
 | `tools/site.mjs` | What those tools share: which files are the site (`.assetsignore`) and which headers a path gets (`_headers`). |
 | `tools/art.mjs` | The art step, `npm run art`: names each picture for its bytes and writes its preview into the page. Run when a picture changes. |
 | `tools/mural/` | The painter the wall came from, and the script that remakes its pictures. |
@@ -76,7 +77,7 @@ Each mode runs the same steps in order and stops at the first that fails:
 2. `tools/product-facts.mjs` reads the app's repo and checks four facts the site states against it: no default shortcut, the minimum macOS, the price, and the download URL of the current release.
 3. For a real deploy, the git tree must be clean: what goes up is a commit.
 4. Wrangler uploads a copy of the tracked files minus the dev files. The preview copy gains one header, `X-Robots-Tag: noindex, nofollow`; the live copy is untouched. Wrangler is run without a terminal, so it never stops to ask: the Workers' hosts are made to match the two `wrangler.toml` files.
-5. A smoke check of the served site (`tools/smoke.mjs`): `/` is this `index.html` byte for byte; five paths carry every header `_headers` gives them, the policy among them; `/index.html` redirects to `/` and keeps its query; a missing path is a 404; `robots.txt` allows crawling; the preview says noindex and the live site does not; and on the live site `http://` and `www` answer 301 to the same path and query on the apex.
+5. A smoke check of the served site (`tools/smoke.mjs`): `/` is this `index.html` byte for byte; five paths carry every header `_headers` gives them, the policy among them; `/` asked for as Markdown is this `index.md` byte for byte, with its headers, and both answers say `Vary: Accept`; `/index.html` redirects to `/` and keeps its query; a missing path is a 404; `robots.txt` allows crawling; the preview says noindex and the live site does not; and on the live site `http://` and `www` answer 301 to the same path and query on the apex.
 
 A run that stops names the step that failed, removes the copy it made for wrangler, and says whether the live deploy had started.
 
@@ -93,6 +94,16 @@ npx wrangler rollback <version-id> --name menubarreveal -m "<reason>"
 ```
 
 A rollback switches the Worker to the earlier upload; it does not change this folder. To make it stick, revert the commit and deploy again. The preview Worker is `menubarreveal-preview`, the redirect is `menubarreveal-www`.
+
+### Markdown at the home page
+
+The home page has two representations at one address. A request to `/` whose `Accept` header names `text/markdown` gets `index.md`, as `text/markdown; charset=utf-8`; every other request, a browser's among them, gets the page as before. Both answers say `Vary: Accept`, so a cache keeps them apart.
+
+```sh
+curl -H 'Accept: text/markdown' https://menubarreveal.com/
+```
+
+`worker.mjs` does this, in about 40 lines. `wrangler.toml` runs it for `/` alone (`run_worker_first = ["/"]`), so every other path is answered by the files without it. It reads both answers from the files, so each carries the headers `_headers` gives its file, the security headers among them. One difference: `_headers` marks the file `/index.md` noindex, as a duplicate of the page, and the Markdown answer at `/` does not carry that, because there it is the home page. Markdown wins when `text/markdown` is named with a weight above zero and no smaller than `text/html`'s; `*/*` alone does not ask for it.
 
 ### Analytics
 
