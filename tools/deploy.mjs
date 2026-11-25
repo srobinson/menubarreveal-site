@@ -1,5 +1,5 @@
 // From this folder to the live site. A deploy step, not a build: what is served is the files as they are here,
-// copied untouched (the preview copy alone gains a noindex header).
+// copied untouched (the preview copy alone gains a noindex header), and worker.mjs, which answers the home page.
 //   npm run deploy                 dry run: every check, then wrangler validates the site and the www Worker; uploads nothing
 //   npm run deploy -- --preview    the same checks, then https://preview.menubarreveal.com (noindexed), then a smoke check
 //   npm run deploy -- --live       the same checks, then https://menubarreveal.com and the www redirect, then a smoke check

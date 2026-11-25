@@ -19,5 +19,6 @@ node_modules
 package.json
 package-lock.json
 tools
+worker.mjs
 wrangler.toml
 www-redirect
