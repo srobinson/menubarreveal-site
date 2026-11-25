@@ -1,0 +1,151 @@
+{
+ "url": "https://menubarreveal.com/",
+ "lighthouse": "lighthouse@12.8.2",
+ "network": "Fast 4G, applied: 8100 kbit/s down, 1350 kbit/s up, 165 ms a request; CPU 1x",
+ "screens": {
+  "desktop": {
+   "median": {
+    "ttfb": 32,
+    "fcp": 565,
+    "lcp": 565,
+    "cls": 0,
+    "speedIndex": 781,
+    "firstVisualChange": 568,
+    "lastVisualChange": 1238,
+    "kB": 822,
+    "requests": 18,
+    "scores": {
+     "performance": 100,
+     "accessibility": 100,
+     "best-practices": 100,
+     "seo": 92
+    }
+   },
+   "runs": [
+    {
+     "ttfb": 32,
+     "fcp": 565,
+     "lcp": 565,
+     "cls": 0,
+     "speedIndex": 781,
+     "firstVisualChange": 568,
+     "lastVisualChange": 1238,
+     "kB": 822,
+     "requests": 18,
+     "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92
+     }
+    },
+    {
+     "ttfb": 27,
+     "fcp": 555,
+     "lcp": 555,
+     "cls": 0,
+     "speedIndex": 767,
+     "firstVisualChange": 555,
+     "lastVisualChange": 1230,
+     "kB": 822,
+     "requests": 18,
+     "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92
+     }
+    },
+    {
+     "ttfb": 70,
+     "fcp": 687,
+     "lcp": 687,
+     "cls": 0,
+     "speedIndex": 931,
+     "firstVisualChange": 690,
+     "lastVisualChange": 1373,
+     "kB": 822,
+     "requests": 18,
+     "scores": {
+      "performance": 99,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92
+     }
+    }
+   ]
+  },
+  "phone": {
+   "median": {
+    "ttfb": 90,
+    "fcp": 608,
+    "lcp": 608,
+    "cls": 0,
+    "speedIndex": 954,
+    "firstVisualChange": 609,
+    "lastVisualChange": 1828,
+    "kB": 1322,
+    "requests": 18,
+    "scores": {
+     "performance": 100,
+     "accessibility": 100,
+     "best-practices": 100,
+     "seo": 92
+    }
+   },
+   "runs": [
+    {
+     "ttfb": 29,
+     "fcp": 549,
+     "lcp": 549,
+     "cls": 0,
+     "speedIndex": 868,
+     "firstVisualChange": 551,
+     "lastVisualChange": 1776,
+     "kB": 1322,
+     "requests": 18,
+     "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92
+     }
+    },
+    {
+     "ttfb": 33,
+     "fcp": 1434,
+     "lcp": 1434,
+     "cls": 0,
+     "speedIndex": 1651,
+     "firstVisualChange": 1435,
+     "lastVisualChange": 1865,
+     "kB": 1322,
+     "requests": 18,
+     "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92
+     }
+    },
+    {
+     "ttfb": 90,
+     "fcp": 608,
+     "lcp": 608,
+     "cls": 0,
+     "speedIndex": 954,
+     "firstVisualChange": 609,
+     "lastVisualChange": 1828,
+     "kB": 1322,
+     "requests": 18,
+     "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92
+     }
+    }
+   ]
+  }
+ }
+}
