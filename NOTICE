@@ -1,0 +1,15 @@
+menubarreveal-site
+Copyright (c) 2026 Stuart Robinson
+
+The MIT License in LICENSE covers this site's code: the markup and styles in index.html and 404.html, the
+style sheet under assets/404/, the scripts and configuration under tools/ and www-redirect/, and the
+configuration files at the top level.
+
+It does not cover the artwork or the characters. The wall painting, the posters, the figures drawn on
+them, the Menu Bar Reveal name and icon, the share image and the pictures under assets/art/ and
+assets/404/ are copyright Stuart Robinson, all rights reserved, as are the pictures tools/mural/ paints
+and the character silhouettes it paints them from. This may change; until it does, ask before reusing them.
+
+The fonts under assets/fonts/ belong to their authors and keep their own licences, in
+assets/fonts/licences/: Anton and Tinos under the SIL Open Font License 1.1, Special Elite under the
+Apache License 2.0.
