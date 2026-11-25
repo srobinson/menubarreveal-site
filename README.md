@@ -70,12 +70,11 @@ npm run deploy -- --live       # https://menubarreveal.com, and the www redirect
 
 Each mode runs the same steps in order and stops at the first that fails:
 
-1. The style hash in `_headers` is brought up to date.
-2. `npm run lint`.
-3. `tools/product-facts.mjs` reads the app's repo and checks four facts the site states against it: no default shortcut, the minimum macOS, the price, and the download URL of the current release.
-4. For a real deploy, the git tree must be clean: what goes up is a commit.
-5. Wrangler uploads a copy of the tracked files minus the dev files. The preview copy gains one header, `X-Robots-Tag: noindex, nofollow`; the live copy is untouched.
-6. A smoke check of the served site: `/` is this `index.html` byte for byte, the policy header is the one in `_headers`, `/index.html` redirects, a missing path is a 404, and on the live site `http://` and `www` answer 301 to the apex.
+1. `npm run lint`, which also fails on a stale style hash in `_headers` and says how to fix it. The deploy changes no file in this folder.
+2. `tools/product-facts.mjs` reads the app's repo and checks four facts the site states against it: no default shortcut, the minimum macOS, the price, and the download URL of the current release.
+3. For a real deploy, the git tree must be clean: what goes up is a commit.
+4. Wrangler uploads a copy of the tracked files minus the dev files. The preview copy gains one header, `X-Robots-Tag: noindex, nofollow`; the live copy is untouched.
+5. A smoke check of the served site: `/` is this `index.html` byte for byte, the policy header is the one in `_headers`, `/index.html` redirects, a missing path is a 404, and on the live site `http://` and `www` answer 301 to the apex.
 
 Run the preview first, look at it, then go live.
 

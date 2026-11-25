@@ -3,8 +3,8 @@
 //   npm run deploy                 dry run: every check, then wrangler validates the site and the www Worker; uploads nothing
 //   npm run deploy -- --preview    the same checks, then https://preview.menubarreveal.com (noindexed), then a smoke check
 //   npm run deploy -- --live       the same checks, then https://menubarreveal.com and the www redirect, then a smoke check
-// Order: the style hash in _headers, lint and the facts check, the product facts, a clean git tree, wrangler, smoke check.
-// It stops at the first step that fails. Wrangler uses the logged in Cloudflare account (`npx wrangler login`).
+// Order: lint with the facts check and the style hash, the product facts, a clean git tree, wrangler, smoke check.
+// It stops at the first step that fails, and it changes no file here: a stale style hash is named by lint, not rewritten. Wrangler uses the logged in Cloudflare account (`npx wrangler login`).
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -19,8 +19,7 @@ const step = (name, fn) => { console.log(`\ndeploy: == ${name}`); return fn(); }
 const stop = (why) => { console.error(`deploy: STOPPED: ${why}. Nothing after this step ran.`); process.exit(1); };
 const wrangler = (...args) => run('npx', 'wrangler', 'deploy', ...args);
 
-step('the style hash in _headers (tools/csp.mjs --write)', () => run('node', 'tools/csp.mjs', '--write'));
-step('lint and the facts check (npm run lint)', () => run('npm', 'run', '--silent', 'lint'));
+step('lint, the facts check and the style hash in _headers (npm run lint)', () => run('npm', 'run', '--silent', 'lint'));
 step('the product facts against the product repo (tools/product-facts.mjs)', () => run('node', 'tools/product-facts.mjs'));
 if (mode !== '--dry-run') step('a clean git tree: what goes up is a commit', () => {
   const dirty = out('git', 'status', '--porcelain').trim();

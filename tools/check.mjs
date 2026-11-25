@@ -78,7 +78,7 @@ for (const file of [...PAGES, 'assets/404/404.css']) {
 }
 
 // ---------- the Content Security Policy ----------
-if (styleSrcInHeaders() !== styleSrc()) fails.push(`_headers has a stale style hash: run npm run csp\n    says:       ${styleSrcInHeaders()}\n    the pages:  ${styleSrc()}`);
+if (styleSrcInHeaders() !== styleSrc()) fails.push(`_headers has a stale style hash: run npm run csp, then commit _headers\n    says:       ${styleSrcInHeaders()}\n    the pages:  ${styleSrc()}`);
 for (const file of PAGES) for (const use of new Set(forbiddenInline(read(file)))) fails.push(`${file} carries ${use}: the policy allows no style attribute, event handler or inline script`);
 
 if (fails.length) { console.error(`check: ${fails.length} disagree\n\n${fails.map((f) => `- ${f}`).join('\n')}`); process.exit(1); }
