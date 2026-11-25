@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { root } from './site.mjs';
+import { headerRules, headersFor, root, siteFiles, withNoindex } from './site.mjs';
 
 export const HOSTS = { '--preview': 'https://preview.menubarreveal.com', '--live': 'https://menubarreveal.com' };
 const DOH = process.env.DOH || 'https://cloudflare-dns.com/dns-query';
@@ -62,8 +62,17 @@ export const smoke = async (mode) => {
   }
   check(`${host}/ returns 200`, home.status === 200);
   check(`${host}/ serves this index.html, byte for byte`, home.body === page);
-  const policy = readFileSync(join(root, '_headers'), 'utf8').match(/Content-Security-Policy:\s*(.*)/)[1].trim();
-  check('the Content-Security-Policy header is the one in _headers', home.headers.get('content-security-policy') === policy);
+  // Every header _headers gives a path, the policy among them, must be served with that value: the home page, the two
+  // files with rules of their own, one file under /assets/ and a missing path. The preview's _headers is the one
+  // the deploy uploads there, with noindex.
+  const headersFile = readFileSync(join(root, '_headers'), 'utf8');
+  const rules = headerRules(mode === '--preview' ? withNoindex(headersFile) : headersFile);
+  for (const path of ['/', '/index.md', '/llms.txt', `/${siteFiles().find((file) => file.startsWith('assets/'))}`, '/no-such-page']) {
+    const served = path === '/' ? home : get(host + path);
+    const want = headersFor(rules, path);
+    const wrong = want.filter(([name, value]) => served.headers.get(name.toLowerCase()) !== value).map(([name]) => name);
+    check(`${path} is served with the ${want.length} headers _headers gives it${wrong.length ? `; wrong or missing: ${wrong.join(', ')}` : ''}`, !wrong.length);
+  }
   const robotsTag = home.headers.get('x-robots-tag') ?? '';
   check('og.jpg returns 200', get(`${host}/og.jpg`).status === 200);
   check('a missing path returns 404', get(`${host}/no-such-page`).status === 404);
