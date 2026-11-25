@@ -1,5 +1,7 @@
 #!/bin/bash
 # Paints the wall and encodes the page's four wall pictures into assets/art/. About two minutes.   bash tools/mural/art.sh
+# Then run `npm run art`: it gives each file the digest of its bytes in its name and writes the names and the
+# previews into the page. Painted and encoded with the versions below, the bytes and so the names do not change.
 #   mural-strip-692.avif, mural-strip-1384.avif       sun at y 300, the middle 692 of the wall's 1440 px: phones
 #   mural-sun450-1440.avif, mural-sun450-2880.avif    sun at y 450, the whole wall: wide screens
 # paint.py is seeded, so it paints the same wall every time. Needs python3 with numpy, scipy and Pillow, and avifenc.

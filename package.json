@@ -4,11 +4,13 @@
   "description": "menubarreveal.com: one hand written page. The tooling is lint, checks and a deploy step; nothing is built.",
   "scripts": {
     "lint": "html-validate index.html 404.html && stylelint index.html \"assets/**/*.css\" && node tools/check.mjs",
+    "art": "node tools/art.mjs && node tools/csp.mjs --write",
     "csp": "node tools/csp.mjs --write",
     "serve": "node tools/serve.mjs",
     "deploy": "node tools/deploy.mjs"
   },
   "devDependencies": {
+    "@11ty/eleventy-img": "7.1.1",
     "html-validate": "^11.22.1",
     "postcss-html": "^2.0.1",
     "stylelint": "^17.16.0",

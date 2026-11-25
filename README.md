@@ -1,6 +1,6 @@
 # menubarreveal.com
 
-The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one hand written page. There is no build. The files in this folder are the files that are served.
+The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one hand written page. There is no build: the files in this folder are the files that are served. One step runs by hand, when a picture changes (`npm run art`), and its results are committed like any other file.
 
 ## What is in this folder
 
@@ -8,8 +8,8 @@ The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The page: markup, one readable `<style>` block, and the SVG filters the styles call. No script. |
-| `assets/art/` | The page's pictures. |
+| `index.html` | The page: markup, one readable `<style>` block, and the SVG filters the styles call. No script. The art step writes the pictures' names and previews into it, between two marks. |
+| `assets/art/` | The page's pictures, each named with a digest of its bytes. |
 | `assets/fonts/` | Anton and Tinos (the page) and Special Elite (the 404 page), with their licences. |
 | `404.html`, `assets/404/` | The page for a missing address, its styles and pictures. |
 | `favicon.ico`, `favicon.svg`, `favicon-96.png`, `apple-touch-icon.png` | Icons. |
@@ -28,6 +28,7 @@ The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one
 | `tools/smoke.mjs` | The check of the served site against this folder: the deploy's last step, and a command of its own. |
 | `tools/serve.mjs` | The site on your machine, with its real headers. |
 | `tools/site.mjs` | What those tools share: which files are the site (`.assetsignore`) and which headers a path gets (`_headers`). |
+| `tools/art.mjs` | The art step, `npm run art`: names each picture for its bytes and writes its preview into the page. Run when a picture changes. |
 | `tools/mural/` | The painter the wall came from, and the script that remakes its pictures. |
 | `package.json`, `package-lock.json`, `.browserslistrc`, `.htmlvalidate.json`, `.stylelintrc.json`, `.github/` | Lint: its tools, its settings, and the workflow that runs it on every push. |
 | `LICENSE`, `NOTICE`, `README.md` | The licence, what it does not cover, and this file. |
@@ -43,7 +44,7 @@ npm install      # once
 npm run lint     # html-validate, stylelint, then tools/check.mjs
 ```
 
-The check covers the title, the descriptions, the share tags, both JSON-LD blocks, `index.md`, `llms.txt`, `sitemap.xml`, `robots.txt` and the 404 page. It writes nothing. It also fails if a page names a file that is not here, or if the style hash in `_headers` is stale.
+The check covers the title, the descriptions, the share tags, both JSON-LD blocks, `index.md`, `llms.txt`, `sitemap.xml`, `robots.txt` and the 404 page. It writes nothing. It also fails if a page names a file that is not here, if a picture's name does not carry the digest of its bytes, or if the style hash in `_headers` is stale.
 
 Three things it cannot see:
 
@@ -109,11 +110,32 @@ The pictures are not preloaded with `<link>` tags: the styles ask for them the m
 
 ## Pictures and fonts
 
-Files under `assets/` are cached for a year (`_headers`). A changed file gets a new name; never replace one in place. Optimise a picture once, when you add it, and commit only the result. Every picture the wall is masked by must be opaque: one with see through parts would cut holes in the page.
+Files under `assets/` are cached for a year (`_headers`), so a picture's file name carries a digest of its bytes (`plate.80b622ae8a0a354e.webp`): a changed picture has a new address, and nothing is ever replaced in place. The page also carries a tiny preview of each picture, 24 px wide, inside its styles. The art step writes both.
+
+### The art step
+
+Run `npm run art` when a picture changes, and commit what it writes. Nothing else runs it: a deploy serves the committed files. It is `tools/art.mjs`, about 80 lines over [Eleventy Image](https://www.11ty.dev/docs/plugins/image/) (pinned in `package.json`), and for each picture in the list at its top it:
+
+1. takes the bytes to serve: a plain named file you put in `assets/art/` (`plate.webp`, already optimised), or else the committed file as it is
+2. names the file with the digest of those bytes and removes the file it replaces
+3. makes the 24 px WebP preview from those bytes
+4. writes the names and the previews into `index.html` as custom properties, `--plate` and `--plate-preview`, between the `art:start` and `art:end` marks in the `:root` rule; renames any other mention of the file, such as an `<img src>`; and brings the style hash in `_headers` up to date
+
+So, to change a picture: optimise it, put it in `assets/art/` under its plain name, run `npm run art`, look at the page, commit. To add one: add a line to `PICTURES` in `tools/art.mjs`, run the step, and hang the picture in the styles as two layers, the file over its preview:
+
+```css
+background: var(--plate) 0 0 / 100% 100%, var(--plate-preview) 0 0 / 100% 100%;
+```
+
+Every picture must be opaque, so that it covers its preview. The step can also encode a picture itself: give its entry a lossless `master`, the `widths` and the `encode` options (the top of `tools/art.mjs` says how). No picture here is made that way yet: the files below are the approved ones, byte for byte.
+
+### Where each file came from
+
+A file's name in the repo has the digest before its extension.
 
 | File | How it was made |
 | --- | --- |
-| `mural-strip-692.avif`, `mural-strip-1384.avif` | The wall for phones, sun at y 300: the middle 692 of its 1440 px. `bash tools/mural/art.sh` paints it (seeded, 2880x3000), crops it and encodes it with `avifenc -q 62 -s 4`. |
+| `mural-strip-692.avif`, `mural-strip-1384.avif` | The wall for phones, sun at y 300: the middle 692 of its 1440 px. `bash tools/mural/art.sh` paints it (seeded, 2880x3000), crops it and encodes it with `avifenc -q 62 -s 4`; `npm run art` then names it. |
 | `mural-sun450-1440.avif`, `mural-sun450-2880.avif` | The whole wall for wide screens, sun at y 450. The same script, the same settings. |
 | `wall-relief.webp` | The wall's blockwork as light and shade, 1440x1500, lossy WebP. As it came from the design; its source and encoder settings were not kept. |
 | `plate.webp` | The stage in the front page photo, 1100x1540, lossless WebP. As it came; source not kept. |
@@ -121,9 +143,9 @@ Files under `assets/` are cached for a year (`_headers`). A changed file gets a 
 | `grime.webp` | Paper grime, a 900x900 tile, lossy WebP. As it came; source and settings not kept. |
 | `ply-halftone.webp` | The waiter, 500x800, lossy WebP. As it came; source and settings not kept. |
 | `Anton-400.woff2`, `Tinos-700.woff2` | Latin subsets (232 and 235 characters) as WOFF2, as they came. SIL Open Font Licence. |
-| `SpecialElite-400.woff2`, `assets/404/*` | The 404 page's face (Apache 2.0) and pictures, as they came. |
+| `SpecialElite-400.woff2`, `assets/404/*` | The 404 page's face (Apache 2.0) and pictures, as they came. The art step does not touch them. |
 
-`art.sh` reproduces the four wall pictures byte for byte with libavif 1.4.2 and aom 3.15.3; another encoder version may give different bytes for the same painting. The painter draws its figures from the silhouettes in `tools/mural/src/`.
+`art.sh` reproduces the four wall pictures byte for byte with libavif 1.4.2 and aom 3.15.3, so their names do not change; another encoder version may give different bytes for the same painting. The painter draws its figures from the silhouettes in `tools/mural/src/`.
 
 ## Licence
 

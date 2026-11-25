@@ -1,8 +1,9 @@
 // One fact, one place: facts.json. The site says each fact in several files, by hand; this checks that every copy
-// agrees with facts.json, that every file the pages name exists, and that the pages carry nothing the Content
-// Security Policy would refuse. It verifies and writes nothing: to change a fact, change facts.json and each place this
-// names.   node tools/check.mjs   (part of npm run lint)
-import { existsSync, readFileSync } from 'node:fs';
+// agrees with facts.json, that every file the pages name exists, that each picture is named for its bytes, and that
+// the pages carry nothing the Content Security Policy would refuse. It verifies and writes nothing: to change a
+// fact, change facts.json and each place this names.   node tools/check.mjs   (part of npm run lint)
+import { createHash } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { PAGES, forbiddenInline, styleSrc, styleSrcInHeaders } from './csp.mjs';
 
 const root = new URL('../', import.meta.url);
@@ -75,6 +76,12 @@ for (const file of [...PAGES, 'assets/404/404.css']) {
     const path = ref.startsWith('/') ? ref.slice(1) : new URL(ref, new URL(file, 'http://x/')).pathname.slice(1);
     if (!existsSync(new URL(path === '' ? 'index.html' : path, root))) fails.push(`${file} names ${ref}, which is not in the repo`);
   }
+}
+
+// ---------- a picture's name carries the digest of its bytes (npm run art names them) ----------
+for (const file of readdirSync(new URL('assets/art/', root))) {
+  const digest = createHash('sha256').update(readFileSync(new URL(`assets/art/${file}`, root))).digest('hex').slice(0, 16);
+  if (!file.includes(`.${digest}.`)) fails.push(`assets/art/${file}: its name should carry the digest of its bytes, ${digest}: run npm run art`);
 }
 
 // ---------- the Content Security Policy ----------

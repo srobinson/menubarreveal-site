@@ -54,15 +54,16 @@
 }
 </script>
 
-<!-- Both faces are asked for with the page; the pictures are asked for by the styles below, in the same instant. -->
+<!-- Both faces are asked for with the page; the pictures are asked for by the styles below, in the same instant,
+     and a tiny preview of each is in the styles themselves. -->
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Anton-400.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Tinos-700.woff2" crossorigin>
 
 <style>
 /* ==========================================================================
    Menu Bar Reveal: one page, a painted wall with a tabloid front page pasted on it.
-   No script and no motion. Sections: type, the wall (and how it appears in one paint),
-   the side sheets, the front page, phones, wide screens.
+   No script and no motion. Sections: type, the pictures (written by the art step), the wall (and how it
+   appears in one paint), the side sheets, the front page, phones, wide screens.
 
    Units. The wall is a canvas of 1440 x 1500 "wall px"; --u is one wall px on screen.
    The front page is a sheet 1000 units wide; 1 unit is 0.1cqi.
@@ -88,6 +89,24 @@
   --paper: #ebe5d3;
   --glue: rgba(78, 60, 28, .22);
   --display: Anton, Impact, sans-serif;
+
+  /* art:start -- the pictures. For each, its file (named with a digest of its bytes) and a 24 px preview of it
+     that comes with the page. Written by `npm run art` (tools/art.mjs): do not edit between the marks. */
+  --mural-phone: image-set(url(assets/art/mural-strip-692.654d44cbdd327887.avif) 1x, url(assets/art/mural-strip-1384.a6719711df84eaf5.avif) 2x);
+  --mural-phone-preview: url(data:image/webp;base64,UklGRsQBAABXRUJQVlA4ILgBAACwCQCdASoYADQAPtFgpE6oJaMiKBgNUQAaCWwAnTLCQd9KvNRlNuJz0emAb0ObQA2VnTIXo3OyKjU5nmK4ukyj7iQDlD1nmc6qexXncq6JlA3ssorjEAD4wsJhWjke1ONAcXIjyU3Dl1t4ZdEbWI/v+8A2D819een4DV3vE/cuUaWGEzqo5caANRxbMJw1whHe5hHEkogFFSdT26XETj5TN0YRDBefpMMb8hGiK7ZASR6Sr+atZiNBAHnUI32J+T1fsPXZ0lVoKcIWc/rfq6R5ao6LCGDoGSU7mTwHfBSdGz3ZksM/LcnmKO2LlLepfege47gNxR+eVMmMf9vQxuJIPK530Gr3D9EYXpB61KHYswwONsm4XG+T1oBSA+2fyNC+2mF1LyJ0Rt2FEakcP6v5+PAPQiJwiuWYQkUpdERS1N2zS52jOt4KJLrc4bs1UZ7O7OnsVt+KfPLaPzJwZS+a228/6SGRLzhxCnvO1wBP6XfCnM1QVbh1p1kEZMTBDrHkAzIuUq0O3EKejHHBsv0GkJEVHH6oO0s7+KaJ/3OgUZdZ3AqgxOuqNxBrnY98FW0qtubLQAAAAA==);
+  --mural-wide: image-set(url(assets/art/mural-sun450-1440.8dcf922ca9daab34.avif) 1x, url(assets/art/mural-sun450-2880.0e55f521a4e72517.avif) 2x);
+  --mural-wide-preview: url(data:image/webp;base64,UklGRkQBAABXRUJQVlA4IDgBAACQBwCdASoYABkAPtFYpE0oJSOiKA1RABoJbACdMuN6atS9k+ek0wDecivxt5g/5Cnob0gX8CQ/O9m9erwFLIdY+mTzS4AAzijkhZ43+c43pF6MkPxNbH/QTOBPNKQtQi/2nCOJpbiZt01OKJ0Cm10npAFCv1eGfDaiDdhk43xJ24gfkgalchMDbKFVFvq+xoooTI+KtvIg2CetFNH2Cryjj3YgrLn3mZ6cvfwcVnYh9hM/0XH7MHSaWoNXQXL3qYJq0mIUxTpnIFv9jSz9l2pKdg4/T+MLPHtwrbl26W/BX4B2Z/Adl9MbrbqLwpn3G6I7HhCdwFGY+K8PYV6hK1ZLa3+xxA4W+IToh3MA5MK4RcZST+0om6s6RcI5bmCWOMNoVssfOfz/VMp4vQH0A+fx9wU9lkuJgAA=);
+  --relief: url(assets/art/wall-relief.945d03e6d79a542c.webp);
+  --relief-preview: url(data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAAAQAwCdASoYABkAPtFYpk0oJSOiMBgMAQAaCWkAAEvlroAA6Azih12AAAA=);
+  --plate: url(assets/art/plate.80b622ae8a0a354e.webp);
+  --plate-preview: url(data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAADQBACdASoYACIAPsFMnkunpCKhtUgA8BgJaQAAeiAkNnVvNhyw70xdU8znRkM1gAD+9BmJ+Pmx+dxA112dttC+asaI/czn3yz245JNgFJfeNFZWiD2IFpAfUw9J1FCfPGvlBFYy0j21iW/mt6jCRllEGIm9kZghRQAAA==);
+  --crease: url(assets/art/crease-flyer.6ffac7622cb7d79e.webp);
+  --crease-preview: url(data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAACwBACdASoYACcAPtFWpEyoJKOiMBqoAQAaCWkAAIPZoW9O6bmoImv4AsfC1iwAAN+/zm/PoDXmucwhtamslQJNmDvzJAYGDDON1RKV0fFiIQAMGgLsHzyyGRQJacMcdDUPJaGDdCwmeWrHg24P+O+q5+bqnMvkqeAuAA7++AAAAA==);
+  --grime: url(assets/art/grime.0f19c3772fcf5cfd.webp);
+  --grime-preview: url(data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACwAwCdASoYABgAPtFcqE4oJSOiKAqpABoJaQAAPgBYPvZ6e3UlAAD+4Gd5obYm1MIIbS3YKhPSbw2VOL8NZJVPN7Zt/r1QI0YOTV8GfAAAAA==);
+  --ply: url(assets/art/ply-halftone.61bbc4ed69318f78.webp);
+  --ply-preview: url(data:image/webp;base64,UklGRigBAABXRUJQVlA4IBwBAACQBgCdASoYACYAPtFWpEwoJKOiKrgN+QAaCWkABRAhnHjjFg2EOiSFzow3pCtTv8p7TjcWitpgdHp3U6EAAP72CdXo1kdDhCOR0+oPRUKHYRItKK0Z71L+AVKowosAkyfx3XuizFFfP32HyZOH4N3dtcThmELSh6dMhml/8GUyfHlkVDVQ6r7kNa1NaQGY9SWd1zINT3rcBxGhgvTc95Oz1pY0DyQWROblQj2rn6OzUOwePWz0lxTDJ/iyajLgGn9OlcL3f0Sk/8am+tPcfO3xN/jTyEvt/eIuMlc7OwVEp0eTsneSnyVWW6nS0/XGggtSe7dZdZvxw4u5OMZpGG/TXqNBMLkwwp8kXRrpymNeOqosKkG/FZaGwAAAAA==);
+  /* art:end */
 }
 * {
   box-sizing: border-box;
@@ -118,7 +137,6 @@ body {
   --band-top: calc(var(--pad-t) + min(100vw - 32px, 640px) * var(--sheet-ar));
   --wall-h: calc(var(--band-top) + var(--band) + var(--pad-b));
   --u: max(100vw / 1440, var(--wall-h) / 1500);
-  --textures: url(assets/art/wall-relief.webp), url(assets/art/plate.webp), url(assets/art/crease-flyer.webp), url(assets/art/grime.webp), url(assets/art/ply-halftone.webp);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -130,7 +148,7 @@ body {
      the browser draws nothing of the wall, so the page shows its background colour until the last picture is
      in; then wall, sheets and type appear together. Every picture here is opaque (a see through one would
      cut holes). If one is slow, the mask comes off after four seconds and the wall shows as it stands. */
-  mask-image: var(--mural), var(--textures);
+  mask-image: var(--mural), var(--relief), var(--plate), var(--crease), var(--grime), var(--ply);
   mask-size: 16px 16px;
   mask-composite: intersect;
   animation: mask-off 0s 4s forwards;
@@ -145,7 +163,7 @@ body {
   z-index: 0;
   width: calc(1440 * var(--u));
   height: calc(1500 * var(--u));
-  background: var(--mural) 0 0 / 100% 100%;
+  background: var(--mural) 0 0 / 100% 100%, var(--mural-preview) 0 0 / 100% 100%;
 }
 /* the daylight: the mural's own, so it stops where the bare wall under it starts */
 .daylight {
@@ -206,7 +224,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: url(assets/art/grime.webp) 0 0 / 600px 600px;
+  background: var(--grime) 0 0 / 600px 600px, var(--grime-preview) 0 0 / 600px 600px;
   mix-blend-mode: multiply;
   opacity: .5;
   pointer-events: none;
@@ -238,7 +256,7 @@ body {
   left: calc(-720 * var(--u) - var(--L));
   width: calc(1440 * var(--u));
   height: calc(1500 * var(--u));
-  background: url(assets/art/wall-relief.webp) 0 0 / 100% 100%;
+  background: var(--relief) 0 0 / 100% 100%, var(--relief-preview) 0 0 / 100% 100%;
   opacity: var(--thru);
   transform: rotate(calc(var(--r) * -1));
   transform-origin: calc(720 * var(--u) + var(--L) + var(--Wd) / 2) calc(var(--T) + var(--Ht) / 2);
@@ -266,6 +284,9 @@ body {
   width: 100%;
   height: 68cqh;
   object-fit: contain;
+  /* the preview, behind the picture: the picture is as tall as this box and 5:8, and the preview stops 2px
+     short of it all round, so it never shows at the picture's edge */
+  background: var(--ply-preview) center / calc(42.5cqh - 4px) calc(100% - 4px) no-repeat;
   mix-blend-mode: multiply;
 }
 .ply h2 {
@@ -368,7 +389,8 @@ body {
     radial-gradient(40% 18% at 12% 96%, rgba(120, 90, 40, .20), transparent 70%),
     radial-gradient(30% 12% at 86% 3%, rgba(120, 90, 40, .16), transparent 70%),
     radial-gradient(22% 30% at 98% 60%, rgba(120, 90, 40, .14), transparent 70%),
-    url(assets/art/grime.webp) 0 0 / 600px 600px;
+    var(--grime) 0 0 / 600px 600px,
+    var(--grime-preview) 0 0 / 600px 600px;
   mix-blend-mode: multiply;
   opacity: .42;
   pointer-events: none;
@@ -383,7 +405,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: url(assets/art/crease-flyer.webp) 0 0 / 100% 100%;
+  background: var(--crease) 0 0 / 100% 100%, var(--crease-preview) 0 0 / 100% 100%;
   mask: var(--calm);
   mask-composite: exclude;
   mix-blend-mode: hard-light;
@@ -507,7 +529,7 @@ body {
   height: 80.57cqi;
 }
 .stage {
-  background: url(assets/art/plate.webp) 0 0 / 100% 100%;
+  background: var(--plate) 0 0 / 100% 100%, var(--plate-preview) 0 0 / 100% 100%;
   mix-blend-mode: multiply;
   filter: url(#ink-flood);
 }
@@ -676,7 +698,8 @@ body {
   /* A phone sees only the middle of the wall, so its wall picture is that strip alone: the centre 692 of the
      wall's 1440 px, hung in the middle of the mural's box. */
   .wall {
-    --mural: image-set(url(assets/art/mural-strip-692.avif) 1x, url(assets/art/mural-strip-1384.avif) 2x);
+    --mural: var(--mural-phone);
+    --mural-preview: var(--mural-phone-preview);
   }
   .mural {
     background-position: center;
@@ -740,7 +763,8 @@ body {
     --u: calc(var(--mural-h) / 1500);
     --ms: min(0px, 50svh - 450 * var(--u));
     --wall-h: max(100svh, var(--mural-h) + var(--ms) - 72 * var(--u));
-    --mural: image-set(url(assets/art/mural-sun450-1440.avif) 1x, url(assets/art/mural-sun450-2880.avif) 2x);
+    --mural: var(--mural-wide);
+    --mural-preview: var(--mural-wide-preview);
   }
   .mural {
     top: var(--ms);
@@ -865,7 +889,7 @@ body {
   <aside class="sheets" aria-label="Other posters on the wall">
     <div class="stain ply" aria-hidden="true"></div>
     <article class="po ply">
-      <div class="in"><img src="assets/art/ply-halftone.webp" alt="A spiky haired waiter in a slim suit bows, holding out a menu bar on his open palm." width="500" height="800"><h2><span>An icon for</span> <span>your menu bar</span></h2><i class="wrinkle"></i><i class="thru"></i></div>
+      <div class="in"><img src="assets/art/ply-halftone.61bbc4ed69318f78.webp" alt="A spiky haired waiter in a slim suit bows, holding out a menu bar on his open palm." width="500" height="800"><h2><span>An icon for</span> <span>your menu bar</span></h2><i class="wrinkle"></i><i class="thru"></i></div>
     </article>
     <div class="stain lost" aria-hidden="true"></div>
     <article class="po lost">
