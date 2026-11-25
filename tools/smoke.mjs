@@ -36,6 +36,23 @@ export const smoke = async (mode) => {
   const host = HOSTS[mode];
   const fails = [];
   const check = (name, pass) => { console.log(`  ${pass ? 'pass' : 'FAIL'}  ${name}`); if (!pass) fails.push(name); };
+  // one hop: a 301 whose Location, path and query included, is exactly `to`
+  const redirect = (from, to) => {
+    const hop = get(from);
+    check(`${from} answers 301 to ${to}`, hop.status === 301 && new URL(hop.headers.get('location') ?? '', from).href === to);
+  };
+  // every hop a 301 until a 200 at exactly `to`
+  const chain = (from, to) => {
+    const statuses = [];
+    let url = from;
+    for (let i = 0; i < 6; i += 1) {
+      const hop = get(url);
+      statuses.push(hop.status);
+      if (hop.status !== 301) break;
+      url = new URL(hop.headers.get('location') ?? '', url).href;
+    }
+    check(`${from} ends at ${to} (${statuses.join(', ')})`, url === to && statuses.at(-1) === 200);
+  };
   const page = readFileSync(join(root, 'index.html'), 'utf8');
   let home;
   for (let i = 0; i < 12; i += 1) { // the edge can take a few seconds to serve the new files
@@ -50,18 +67,17 @@ export const smoke = async (mode) => {
   const robotsTag = home.headers.get('x-robots-tag') ?? '';
   check('og.jpg returns 200', get(`${host}/og.jpg`).status === 200);
   check('a missing path returns 404', get(`${host}/no-such-page`).status === 404);
-  const moved = get(`${host}/index.html`);
-  check('/index.html answers 301 to /', moved.status === 301 && new URL(moved.headers.get('location'), host).pathname === '/');
+  redirect(`${host}/index.html?q=1`, `${host}/?q=1`);
   if (mode === '--preview') check('every response says noindex', /noindex/i.test(robotsTag));
   else {
     check('the home page does not say noindex', !/noindex/i.test(robotsTag));
     const robots = get(`${host}/robots.txt`).body;
     check('robots.txt allows all and names the sitemap', /^Allow: \/$/m.test(robots) && !/^Disallow: \/$/m.test(robots) && robots.includes(`Sitemap: ${host}/sitemap.xml`));
     check('sitemap.xml returns 200', get(`${host}/sitemap.xml`).status === 200);
-    for (const from of ['http://menubarreveal.com/', 'https://www.menubarreveal.com/']) {
-      const hop = get(from);
-      check(`${from} answers 301 to ${host}/`, hop.status === 301 && hop.headers.get('location') === `${host}/`);
-    }
+    redirect('http://menubarreveal.com/', `${host}/`);
+    redirect('https://www.menubarreveal.com/', `${host}/`);
+    redirect('https://www.menubarreveal.com/llms.txt?utm_source=v&b=2', `${host}/llms.txt?utm_source=v&b=2`);
+    chain('http://www.menubarreveal.com/index.html?q=1', `${host}/?q=1`);
   }
   return fails;
 };

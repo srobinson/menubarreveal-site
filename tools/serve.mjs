@@ -15,9 +15,10 @@ const redirects = readFileSync(join(root, '_redirects'), 'utf8').split('\n').fil
 const rules = headerRules();
 
 const server = createServer((req, res) => {
-  const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  const { pathname, search } = new URL(req.url, 'http://x');
+  const path = decodeURIComponent(pathname);
   const moved = redirects.find(([from]) => from === path);
-  if (moved) return res.writeHead(+moved[2], { Location: moved[1] }).end();
+  if (moved) return res.writeHead(+moved[2], { Location: moved[1] + search }).end(); // the query is kept, as it is live
   let file = normalize(join(root, path.endsWith('/') ? path + 'index.html' : path));
   let status = 200;
   if (!file.startsWith(root) || hidden(path.slice(1)) || !existsSync(file) || !statSync(file).isFile()) { status = 404; file = join(root, '404.html'); }
