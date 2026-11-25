@@ -12,6 +12,6 @@
 ## Links
 
 - [Menu Bar Reveal on GitHub](https://github.com/srobinson/menubar-reveal): source, releases and issues.
-- [README](https://github.com/srobinson/menubar-reveal#readme): install, first open, use and uninstall.
-- [Download](https://github.com/srobinson/menubar-reveal/releases/download/v1.0.0/MenuBarReveal-1.0.0.dmg): the latest release.
-- [Web page](https://menubarreveal.com/): this page as HTML.
+- [README](https://github.com/srobinson/menubar-reveal#readme): install and the first open.
+- [Download](https://github.com/srobinson/menubar-reveal/releases/download/v1.0.0/MenuBarReveal-1.0.0.dmg): version 1.0.0, as a DMG.
+- [Web page](https://menubarreveal.com/): the poster.

@@ -1,0 +1,2 @@
+# /index.html duplicates the home page: a permanent redirect to / (Workers assets keep the query string).
+/index.html / 301

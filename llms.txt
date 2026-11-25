@@ -4,5 +4,5 @@
 
 ## Links
 
-- [Product facts](https://menubarreveal.com/index.md)
-- [Menu Bar Reveal on GitHub](https://github.com/srobinson/menubar-reveal)
+- [Product facts](https://menubarreveal.com/index.md): what it does, the shortcut, compatibility, install, price and privacy.
+- [Menu Bar Reveal on GitHub](https://github.com/srobinson/menubar-reveal): source, README and releases.
