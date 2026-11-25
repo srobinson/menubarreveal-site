@@ -1,17 +1,17 @@
 # Menu Bar Reveal
 
-> Menu Bar Reveal. A single icon for your instant menu bar.
+> A single icon for your menu bar.
 
-- By default, press Option and backtick (⌥`) and the hidden macOS menu bar comes down. Press again, or click elsewhere, and macOS hides it. You can change the shortcut from the app's menu bar icon.
-- Free and MIT licensed. No account, trial or upgrade.
-- For macOS 14 or later, on Apple silicon or Intel.
-- Version 1.0.0.
-- No network code, analytics or screen capture.
-- Needs the menu bar set to hide automatically: System Settings, Menu Bar (macOS 26 and later) or Control Center (macOS 14 and 15).
+- **What it does.** Menu Bar Reveal is a free Mac app for people who keep the menu bar hidden. Press your keyboard shortcut and the bar comes down. Press it again and it goes back up.
+- **Shortcut.** There is no default. The first launch asks you to choose one, and you can change it from the app's menu bar icon.
+- **Compatibility.** macOS 14 or later, with the menu bar set to hide automatically.
+- **Install.** Download the DMG and drag Menu Bar Reveal to Applications. Apple has not notarised it, so macOS blocks the first open. The README gives the two ways past that. It starts at login unless you turn that off in its menu.
+- **Price and licence.** Free, with no account, trial or paid tier. Open source under the MIT licence. Version 1.0.0.
+- **Privacy.** No network code and no analytics. It needs no Accessibility, Input Monitoring or Screen Recording permission.
 
 ## Links
 
 - [Menu Bar Reveal on GitHub](https://github.com/srobinson/menubar-reveal): source, releases and issues.
-- [README](https://github.com/srobinson/menubar-reveal): install, first open, use and uninstall.
+- [README](https://github.com/srobinson/menubar-reveal#readme): install, first open, use and uninstall.
 - [Download](https://github.com/srobinson/menubar-reveal/releases/download/v1.0.0/MenuBarReveal-1.0.0.dmg): the latest release.
 - [Web page](https://menubarreveal.com/): this page as HTML.

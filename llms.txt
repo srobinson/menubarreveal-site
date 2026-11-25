@@ -1,6 +1,6 @@
 # Menu Bar Reveal
 
-> By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.
+> A free, open source Mac app. Press your keyboard shortcut and the hidden menu bar comes down. Press it again and it goes back up.
 
 ## Links
 

@@ -1,10 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Menu Bar Reveal: Swift justice</title>
-<meta name="description" content="By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.">
+<title>Menu Bar Reveal: a shortcut for your hidden Mac menu bar</title>
+<meta name="description" content="A free, open source Mac app. Press your keyboard shortcut and the hidden menu bar comes down. Press it again and it goes back up.">
 <link rel="canonical" href="https://menubarreveal.com/">
 <meta name="theme-color" content="#6f6a62">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -15,25 +15,25 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Menu Bar Reveal">
 <meta property="og:url" content="https://menubarreveal.com/">
-<meta property="og:title" content="Menu Bar Reveal: Swift justice">
-<meta property="og:description" content="By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.">
+<meta property="og:title" content="Menu Bar Reveal: a shortcut for your hidden Mac menu bar">
+<meta property="og:description" content="A free, open source Mac app. Press your keyboard shortcut and the hidden menu bar comes down. Press it again and it goes back up.">
 <meta property="og:image" content="https://menubarreveal.com/og.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A brick wall painted with a yellow sunburst. Pasted in the middle, a tabloid front page: Menu Bar Reveal, under the headline Swift Justice. A red app icon, a menu bar over a down arrow, sits beside the line Your hidden Mac menu bar, on one shortcut. Free. A yellow box reads Get it on GitHub. A smaller sheet to the right reads An icon for your menu bar. Painted figures point toward the page.">
+<meta property="og:image:alt" content="A tabloid front page, Menu Bar Reveal, pasted on a painted wall in the middle of a yellow sun. The headline: SWIFT JUSTICE. Under it, a big red app icon, a bar over a down arrow, and a yellow box: GET IT ON GITHUB. A painted figure points at the page. Beside it, a small poster of a waiter serving a menu bar on his palm.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Menu Bar Reveal: Swift justice">
-<meta name="twitter:description" content="By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.">
+<meta name="twitter:title" content="Menu Bar Reveal: a shortcut for your hidden Mac menu bar">
+<meta name="twitter:description" content="A free, open source Mac app. Press your keyboard shortcut and the hidden menu bar comes down. Press it again and it goes back up.">
 <meta name="twitter:image" content="https://menubarreveal.com/og.jpg">
-<meta name="twitter:image:alt" content="A brick wall painted with a yellow sunburst. Pasted in the middle, a tabloid front page: Menu Bar Reveal, under the headline Swift Justice. A red app icon, a menu bar over a down arrow, sits beside the line Your hidden Mac menu bar, on one shortcut. Free. A yellow box reads Get it on GitHub. A smaller sheet to the right reads An icon for your menu bar. Painted figures point toward the page.">
+<meta name="twitter:image:alt" content="A tabloid front page, Menu Bar Reveal, pasted on a painted wall in the middle of a yellow sun. The headline: SWIFT JUSTICE. Under it, a big red app icon, a bar over a down arrow, and a yellow box: GET IT ON GITHUB. A painted figure points at the page. Beside it, a small poster of a waiter serving a menu bar on his palm.">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Menu Bar Reveal",
   "url": "https://menubarreveal.com/",
-  "description": "By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.",
+  "description": "A free, open source Mac app. Press your keyboard shortcut and the hidden menu bar comes down. Press it again and it goes back up.",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "macOS 14 or later",
   "softwareVersion": "1.0.0",
@@ -63,8 +63,8 @@
 <style>
 /* ==========================================================================
    Menu Bar Reveal: one page, a painted wall with a tabloid front page pasted on it.
-   No script and no motion. Sections: type, the wall, one paint, the side sheets,
-   the front page, wide screens, phones.
+   No script and no motion. Sections: type, the wall (and how it appears in one paint),
+   the side sheets, the front page, phones, wide screens.
 
    Units. The wall is a canvas of 1440 x 1500 "wall px"; --u is one wall px on screen.
    The front page is a sheet 1000 units wide; 1 unit is 0.1cqi.
@@ -89,6 +89,7 @@
   --red: #d1281b;
   --paper: #ebe5d3;
   --glue: rgba(78, 60, 28, .22);
+  --display: Anton, Impact, sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -99,6 +100,7 @@
 html {
   background: #6f6a62;
   -webkit-text-size-adjust: 100%;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features -- a hint for phones; a browser without it loses nothing */
   text-size-adjust: 100%;
 }
 body {
@@ -126,6 +128,18 @@ body {
   min-height: var(--wall-h);
   padding: var(--pad-t) 16px 0;
   background: #3f7d86;
+
+  /* One paint. The wall is masked by its own pictures, as small tiles. While a mask picture is still loading
+     the browser draws nothing of the wall, so the page shows its background colour until the last picture is
+     in; then wall, sheets and type appear together. Every picture here is opaque (a see through one would
+     cut holes). If one is slow, the mask comes off after four seconds and the wall shows as it stands. */
+  mask-image: var(--mural), var(--textures);
+  mask-size: 16px 16px;
+  mask-composite: intersect;
+  animation: mask-off 0s 4s forwards;
+}
+@keyframes mask-off {
+  to { mask-image: none; }
 }
 .mural {
   position: absolute;
@@ -153,21 +167,6 @@ body {
 /* the svg at the foot of the page holds the filters: it takes no room */
 .filters {
   position: absolute;
-}
-
-/* ---------- one paint ----------
-   The wall is masked by its own pictures. A mask picture that has not loaded is a blank mask, so the wall
-   stays out of sight, the page showing its background colour, until the last picture is in; then wall,
-   sheets and type appear together. Every picture here is opaque (a see through one would cut holes).
-   If one never comes, the mask is taken off after four seconds and the wall shows as it stands. */
-.wall {
-  mask-image: var(--mural), var(--textures);
-  mask-size: 16px 16px;
-  mask-composite: intersect;
-  animation: mask-off 0s 4s forwards;
-}
-@keyframes mask-off {
-  to { mask-image: none; }
 }
 
 /* ---------- the side sheets ----------
@@ -202,7 +201,7 @@ body {
   container-type: size;
   background: var(--bg);
   color: var(--fg, var(--ink));
-  font-family: Anton;
+  font-family: var(--display);
   text-align: center;
   text-transform: uppercase;
 }
@@ -420,7 +419,7 @@ body {
   padding-left: 2.2cqi;
   background: var(--red);
   color: var(--paper);
-  font: 400 6.9cqi/7.8cqi Anton;
+  font: 400 6.9cqi/7.8cqi var(--display);
   letter-spacing: .01em;
   text-transform: uppercase;
   filter: url(#ink-flood);
@@ -438,7 +437,7 @@ body {
   height: 5.8cqi;
   background: var(--ink);
   color: var(--paper);
-  font: 400 4.6cqi/5.8cqi Anton;
+  font: 400 4.6cqi/5.8cqi var(--display);
   letter-spacing: .1em;
   text-align: center;
   text-transform: uppercase;
@@ -457,7 +456,7 @@ body {
   left: 0;
   display: block;
   color: var(--ink);
-  font-family: Anton;
+  font-family: var(--display);
   font-weight: 400;
   line-height: 1;
   text-align: center;
@@ -609,7 +608,7 @@ body {
   background: #e8b53c;
   box-shadow: inset 0 0 0 .55cqi var(--ink);
   color: var(--ink);
-  font-family: Anton;
+  font-family: var(--display);
   line-height: 1;
   text-transform: uppercase;
   white-space: nowrap;
@@ -797,7 +796,7 @@ body {
         <p class="mast"><span>Menu Bar Reveal</span></p>
         <p class="strap">A single icon for your menu bar</p>
         <h1 id="title" class="splash"><span class="l1">Swift</span> <span class="l2">justice</span></h1>
-        <div class="photo" aria-hidden="true">
+        <div class="photo" role="img" aria-label="The Menu Bar Reveal icon, a white bar over a down arrow on red, huge on a stage above a crowd with phones raised.">
           <div class="stage"></div>
           <svg class="crowd" viewBox="0 0 1000 1400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
             <path class="rows" d="M2.8 967.4L2.6 979L-4.5 987.3L-13.1 992.5L-22.9 992.4L-31.6 987.5L-37.3 978.3L-39.2 967.4L-38.3 955.9L-31.1 948.1L-22.8 942.6L-13.1 942L-3.8 946.4L1.5 956.3ZM35 1022.3L34.4 1035.6L23.2 1047L7 1055.5L-12.6 1059.8L-33.1 1058.9L-52.2 1054.7L-70.1 1047.5L-76.3 1034.7L-80.8 1022.3L-79.5 1009.1L-69.7 997.2L-51.4 990.8L-33.2 985.1L-12.2 983.2L6.9 989.1L20.9 998.7L33.7 1009.1ZM108 972.8L106.1 983.6L100.5 992.5L91.5 995.5L82.8 995.2L74 992.2L67.8 983.7L66.2 972.8L67.7 961.8L74 953.5L82.6 949.7L91.5 950.2L100 953.9L104.4 963ZM149.7 1023.7L143.7 1035.6L136.5 1047.3L118.8 1052.8L102.3 1059.1L82.5 1060.1L64.8 1054.5L49.4 1046.8L40.6 1035.8L35.3 1023.7L40.9 1011.7L48.4 1000L63.5 991.5L83 989.1L102.4 987.7L120.2 993L133.7 1001.6L142.1 1012.1ZM74.4 955.1L75.4 927.7L84.4 955.1L77.5 955.1L80.1 933.3L87.5 955.1L80.6 955.1L84.8 931.4L90.6 955.1L83.7 955.1L89.5 929.9L93.7 955.1L86.8 955.1L94.2 931.2L96.8 955.1L89.9 955.1L98.9 930.5L99.9 955.1ZM205.1 966.5L202.9 977.4L197.6 987L188.2 989.6L178.7 992.2L169.7 987.2L164 977.7L162.3 966.5L164.9 955.9L169.9 946.2L178.9 941.9L188.4 942.3L196.6 947.5L202.9 955.7ZM241.1 1019.6L235.3 1032.3L226.7 1044.2L208.6 1050.4L190.4 1054.6L170.3 1057.5L151.4 1052.1L137.6 1042.8L124.9 1032.6L123.9 1019.6L124.6 1006.5L136.7 995.9L151.9 987.6L171 984.2L190.4 984.7L210.4 986.7L226.6 995L233.6 1007.2ZM318.7 972.3L316.7 983.2L310.8 992L302.5 998.4L292.5 997.6L282.8 993.9L277.5 983.6L274.4 972.3L275.8 960.1L283.3 951.6L292.3 945.6L302.3 947.4L311.8 951.2L317.8 960.8ZM354.4 1028.9L352.2 1042.4L342.1 1054.6L325 1062.9L304.8 1066.9L283.7 1067.7L263.6 1063.1L249 1053.3L235.8 1042.6L230.9 1028.9L236.6 1015.5L247 1003.5L264.5 995.8L283.4 989.1L304.9 990.7L323.9 996.2L341.8 1003.4L351.5 1015.6ZM308.4 946.5L306.7 950.5L303.7 953.5L299.9 956L295.1 956L290.9 954L288.5 950.4L287.5 946.5L288.5 942.6L291.2 939.4L295.1 936.9L299.9 937.2L304 939.1L306.8 942.5ZM433.1 967.3L432.9 980.1L425.9 990.4L415.3 993.6L404.6 996.1L395.1 989.6L388 979.9L387.3 967.3L387.4 954.4L394.2 943.7L404.5 938.1L415.5 940.3L424.8 945.9L431.8 955.1ZM479.3 1028.2L473.6 1043L460.4 1055.3L441.9 1063.7L421.5 1070.1L398.3 1070.3L375.2 1066.6L360.2 1054.9L350.4 1042L344 1028.2L344.9 1013L357.6 1000L378.3 993.1L398.3 986.1L421.7 985.5L444.2 990.2L460.6 1001L471.2 1013.9ZM424.8 939.5L423.1 943.7L420.5 947.5L415.9 949.2L411 949.5L406.3 947.7L404.1 943.7L402.3 939.5L403.1 935L406.3 931.4L411 929.4L415.9 930.1L420.2 932L423.8 935.1ZM549.6 963.2L545.9 975.3L539.2 985L529.8 990.9L519.2 989.8L510.1 984.3L502.5 975.5L499.4 963.2L501.3 950.1L509.3 940.9L518.7 934L530 934.2L539.3 941.3L547.3 950.2ZM590.9 1023.7L587.1 1038.3L576.1 1051.6L555.8 1058.8L535.9 1066.6L513.2 1063.1L491.8 1059.5L471.2 1052L461.1 1038.3L455.5 1023.7L460.6 1008.9L476.2 997.9L492.8 989L512.6 982.2L534.9 984.3L557 987.2L574.9 996.3L585.9 1009.3ZM496.8 960.5L563.9 962.6L562.5 966.8L496.8 968.4ZM649.6 964.4L647.1 976.3L642.2 988.1L631.5 992.3L620.4 994.1L611 986.6L604.3 976.7L600.3 964.4L604.5 952.2L610.8 941.9L620.7 936.5L631.5 936.9L642.3 940.5L648.6 951.7ZM688.9 1026L685.3 1040.9L673.7 1054L653.8 1061.7L632.8 1066.7L610.4 1066.6L589.4 1061.7L568.7 1054.4L557.5 1041L557.9 1026L558.7 1011.4L570.9 998.8L587.8 988.5L609.5 981.9L632.8 985.4L655.9 988L674.8 997.5L686.6 1010.9ZM750 967L747.7 980.4L740.2 991L729.4 995.6L718.3 995.9L707 991.8L700.4 980.2L698 967L700.8 953.9L707.9 943.4L718 936.9L729.5 938.3L739.7 943.7L747.8 953.4ZM788.5 1031.1L785.4 1046.6L773.7 1060.5L754.1 1070L731.4 1076.3L707.1 1074.4L684.3 1069.6L663.2 1061.1L655.9 1045.8L651.9 1031.1L653.6 1015.9L665.7 1002.5L683 991.3L707 987.5L731.1 987.3L754.6 991.7L773.7 1001.7L786.8 1015.3ZM709.1 944.6L710.1 915L719.1 944.6L713 944.6L715.6 909.2L723 944.6L716.9 944.6L721.1 915.9L726.9 944.6L720.8 944.6L726.6 915.6L730.8 944.6L724.7 944.6L732.1 917.4L734.7 944.6L728.7 944.6L737.7 909.7L738.7 944.6ZM855.3 971.5L853.6 983.1L846.2 990.9L838.3 998.5L828.2 996.8L819.8 991L813.3 982.7L810.6 971.5L814 960.7L818.8 950.5L828.2 946.6L838 946.1L847.3 950.6L854.1 959.6ZM895 1027.5L893.7 1041.2L883.7 1053.7L866.1 1062.1L845.1 1064.4L824.7 1064.6L806 1059.6L790.3 1051.5L780.6 1040.2L776.5 1027.5L775.3 1013.6L787.5 1002L803.9 993L824.6 990L845.6 988.6L863.9 995.4L883.8 1001.2L890.6 1014.5ZM978.8 971.4L976 983.7L970.6 995.2L960 1000.2L949.2 998.2L939.4 993.5L931.2 984.6L931.1 971.4L932.3 958.9L938.3 947.8L948.7 942.2L960.2 941.7L970 948.5L975.9 959.3ZM1022.2 1033.1L1020.6 1047.7L1010.4 1061.3L992.3 1071.1L970.2 1077.4L946.6 1074.5L924.9 1069.8L908 1060L892.5 1048.4L892.7 1033.1L893.1 1018L904.5 1004.4L925.9 997.5L945.8 988.8L969.2 992.6L991.7 995.8L1008.9 1005.8L1018.5 1019ZM940 950L941 917.6L950 950L943.8 950L946.4 919.5L953.8 950L947.5 950L951.7 920.5L957.5 950L951.3 950L957.1 918.8L961.3 950L955.1 950L962.5 917.2L965.1 950L958.8 950L967.8 917.3L968.8 950ZM66.8 938.2L64.4 947.8L60.2 957.1L52.1 962.3L42.8 961.6L35.4 955.8L30 948L27 938.2L29.6 928.2L34.9 919.8L42.8 914.9L51.9 914.9L60.4 919L66.5 927.4ZM95.6 988.3L91.9 1000L81.9 1010L68.5 1018.2L50.9 1022.1L32.5 1021.4L14.4 1018.4L-1.8 1011.6L-9 1000.1L-12 988.3L-10.7 976.2L1.7 966.9L13.4 957L31.9 953.1L51.2 953.4L68.5 958.5L81.6 966.9L92.8 976.4ZM157.6 943.6L155.2 954.7L149.6 964.3L140.5 969.2L130.6 968.7L122.4 963L115.9 954.7L112.9 943.6L115.3 932.2L122.4 924.3L130.9 919.7L140.2 919.6L148.5 924.5L153.7 933.3ZM191.1 997.2L185.6 1010.1L176.1 1021.8L160.6 1030.8L140.5 1034.1L120.6 1032.5L102.1 1028.5L86.3 1020.8L74.4 1010.2L73.1 997.2L73.5 984L86 973.4L101.3 965L120.4 961.3L140.7 959.6L160.8 963.4L174.8 973.3L185 984.4ZM144.4 919.1L143.3 922.9L140.7 926L136.8 927.8L132.5 927.7L128.8 925.8L126.2 922.8L124.5 919.1L126.3 915.5L128.6 912.2L132.4 910.4L136.7 910.8L141 911.9L143.1 915.4ZM267.6 941.3L265.9 950.8L260.6 958.1L253.5 963.6L245.2 961.6L237.9 957.9L232.2 950.9L229.4 941.3L232.3 931.8L237.3 923.9L244.8 918.9L253.4 919.3L260.8 924.1L266.4 931.5ZM305.8 988.2L299.7 998.9L293.1 1009.4L280.1 1017.5L262.1 1019.2L244.9 1019.5L227.1 1017.5L216.1 1008.3L206.5 999.1L202.1 988.2L204.2 976.7L213.5 966.6L228.4 960.3L244.5 955.1L262.6 955.2L279.5 959.4L291.2 967.9L300.3 977.3ZM237 925L238 900.9L247 925L239.8 925L242.4 901.4L249.8 925L242.7 925L246.9 899.6L252.7 925L245.5 925L251.3 903.2L255.5 925L248.4 925L255.8 901.4L258.4 925L251.2 925L260.2 903.2L261.2 925ZM368.5 943.4L367.4 953.1L362.6 961.6L354.6 965.9L346.3 963.5L338.7 960.4L333.1 953.1L330.6 943.4L333.1 933.7L339 926.8L346.2 922.7L354.2 922.8L361.8 926.4L367.8 933.5ZM404 990.2L401.7 1001.4L393.6 1011.5L380.1 1019.3L363.1 1023.6L345.3 1021.4L327.4 1019.5L316.6 1010.2L305.7 1001.4L301.7 990.2L306.5 979.2L316.7 970.2L327.3 960.8L345.2 958.7L362.9 957.6L378.2 963.2L393.2 969.1L401.6 979.1ZM484.6 945.6L482.8 956.5L475.9 963.8L468.1 969.4L459.2 968L451.2 963.7L443.9 956.7L442.6 945.6L444.3 934.7L450 925.7L458.9 922.1L468.1 922.2L476.6 926.3L481.9 935.2ZM522.7 997L516.7 1008.9L508.1 1019.8L492.9 1027.2L475.8 1033.9L455.8 1032.9L436.9 1028.8L423.1 1019.9L411.1 1009.7L407.9 997L414.9 985.2L424.1 974.7L437.5 965.9L455.7 960.7L475 963L493.5 966.1L509.5 973.4L520.2 984.3ZM440 943.4L497 945.1L495.9 948.7L440 950.1ZM598 939.2L595.2 948.2L591.1 956.7L583.4 960.8L574.8 961.7L567.2 956.9L562.4 948.7L559.6 939.2L562 929.5L567.7 922.3L575 917.6L583.3 917.9L591.1 921.7L597 929.1ZM622.8 986.1L620.3 997L613 1007.3L600.3 1015.7L582.9 1019.7L564.9 1017.6L547.5 1015L535 1006.8L527.9 996.7L521.6 986.1L525.9 975L533.5 964.5L548.9 958.6L565.1 955.4L582.6 953.3L598.4 958.5L611.4 965.8L621.1 975ZM703.7 936.3L701.5 946.3L696.4 955L688.5 960.8L679 960.6L670.8 955.4L665.9 946.4L663.2 936.3L665.8 926.2L670.9 917.5L678.9 911.7L688.2 913.3L696.7 917.1L702.1 925.9ZM746 987.9L740.6 1000.2L729.5 1010.3L715.2 1018.2L697.9 1024.1L678.1 1023.5L660.9 1017.9L646.6 1010.1L634.6 1000.4L629.2 987.9L634.1 975.4L645.4 965.1L659.1 956L677.9 951.7L697.5 953.2L714.6 958.4L732.4 964L741.6 975.4ZM689.2 912.7L689 916.5L686.1 919.3L682.4 921L678.2 920.8L674.4 919.4L671.4 916.6L670.7 912.7L671.8 909L674.7 906.4L678.2 904.6L682.4 904.4L686.3 905.9L688.8 909ZM805.8 943.4L803.8 952.2L799.6 960.3L792.3 964.8L784.2 963.7L776.8 960.1L771.4 952.8L770.2 943.4L772.4 934.4L776.6 926.3L784.1 922.5L792.2 922.8L799.2 927.1L805.2 933.7ZM840 989L840.1 1000L829.1 1008.6L818.1 1017.1L801.6 1021.3L784.2 1019.7L767.7 1016.7L754.5 1009.5L745.7 999.9L742.5 989L747.8 978.5L754.7 968.6L769 962.8L783.8 956.8L801.3 957.6L817.7 961.3L832.2 967.8L840.5 977.9ZM776.2 927.5L777.2 908.3L786.2 927.5L779 927.5L781.6 906.6L789 927.5L781.8 927.5L786 908.4L791.8 927.5L784.6 927.5L790.4 905.5L794.6 927.5L787.3 927.5L794.7 908.2L797.3 927.5L790.1 927.5L799.1 905.3L800.1 927.5ZM921.9 939.2L920 949.9L913.3 957L905.6 962.1L896.9 961.2L888.1 958.5L882.4 949.9L881.6 939.2L883.4 929.2L888.3 920.2L896.6 915.8L905.7 915.8L913.5 921.2L919 929.2ZM951.4 989.6L950.5 1001.9L940 1012.2L925.1 1019.7L907 1022.6L888.1 1025.4L869.8 1020.9L854.9 1012.8L845.7 1001.8L842.4 989.6L848.2 978.1L857.3 967.8L869.9 958.6L888.3 954.5L907.5 955L924.4 960.3L939.5 967.3L950.3 977.5ZM80.8 1000.1L112.8 821.5L97.2 818.5L59.2 995.9ZM92.1 818.1L117.9 821.9L123.7 796.5L94.1 792.1ZM94.5 794.1L100.9 795.1L102.7 773.1L97.6 772.4ZM101.5 795.2L107.8 796.1L110.9 769.3L105.8 768.5ZM108.4 796.2L114.7 797.2L118.5 769.5L113.4 768.7ZM115.3 797.3L121.6 798.2L125.3 775.5L120.1 774.8ZM94 812.3L92.3 803.9L79.8 785.9L85.4 782.6L97.1 798.6ZM178.9 991.9L160 837.2L144 838.8L157.1 994.1ZM165.1 824.1L161.5 832.5L155.1 838.9L146.3 838.3L138.8 833.2L136.9 824.1L139.5 815.4L146.1 809.3L155 809.5L161.9 815.3ZM140.8 817L146.6 814.4L134.5 783.5L128.8 787.1ZM151.6 813.9L157.8 815.3L163.6 783.6L157.4 781.2ZM340.3 994.1L325.5 963.2L310.5 968.8L319.7 1001.9ZM301.5 956.8L333.5 955.2L330.7 899.3L298.7 900.9ZM332 960L329.9 967.1L322.3 971.4L313.2 971.2L305 967.4L302.3 960L305.8 953.1L313 948.5L322.3 948.7L329.5 953.1ZM479.9 997.8L499.2 951.5L484.8 944.5L460.1 988.2ZM508.1 932L505.2 942.2L497.2 947.5L488.3 947.7L480.2 942.4L477.5 932L480.3 921.7L488 915.3L497.5 915.6L505.5 921.6ZM649.5 1005.6L666.9 970.1L653.1 961.9L630.5 994.4ZM645.1 954.5L676.9 957.6L682.5 901.9L650.7 898.7ZM676.3 960L673.1 967.3L665.3 971.5L656.2 970.9L648.6 967L646.1 960L647.9 952.7L655.9 948.4L665.2 948.7L673.3 952.6ZM868.9 997.4L887.9 829L872.1 827L847.1 994.6ZM867.1 826.4L892.9 829.6L898 804L868.2 800.4ZM868.8 802.5L875.1 803.2L876.3 781.2L871.1 780.6ZM875.7 803.3L882.1 804.1L884.4 777.2L879.2 776.5ZM882.7 804.1L889 804.9L892 777.1L886.9 776.5ZM889.6 805L896 805.8L898.9 782.9L893.8 782.3ZM868.8 820.6L866.8 812.3L853.8 794.6L859.2 791.3L871.5 806.8ZM945.8 1000.8L915.8 866.4L900.2 869.6L924.2 1005.2ZM921.2 852.2L917.9 862.3L910.2 868.1L901.1 867.9L893.9 861.8L891 852.2L893.4 842.1L901 836.3L910.4 835.5L917.8 842.1Z"/>
@@ -859,7 +858,7 @@ body {
   <aside class="sheets" aria-label="Other posters on the wall">
     <div class="stain ply" aria-hidden="true"></div>
     <article class="po ply">
-      <div class="in"><img src="assets/art/ply-halftone.webp" alt="" width="500" height="800"><h2><span>An icon for</span> <span>your menu bar</span></h2><i class="wrinkle"></i><i class="thru"></i></div>
+      <div class="in"><img src="assets/art/ply-halftone.webp" alt="A spiky haired waiter in a slim suit bows, holding out a menu bar on his open palm." width="500" height="800"><h2><span>An icon for</span> <span>your menu bar</span></h2><i class="wrinkle"></i><i class="thru"></i></div>
     </article>
     <div class="stain lost" aria-hidden="true"></div>
     <article class="po lost">
