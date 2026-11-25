@@ -1,0 +1,13 @@
+{
+  "name": "Menu Bar Reveal",
+  "title": "Show your hidden Mac menu bar with a shortcut | Menu Bar Reveal",
+  "tagline": "A single icon for your menu bar.",
+  "summary": "A free, open source Mac app. Press your keyboard shortcut and the hidden menu bar comes down. Press it again and it goes back up.",
+  "url": "https://menubarreveal.com/",
+  "repo": "https://github.com/srobinson/menubar-reveal",
+  "version": "1.0.0",
+  "downloadUrl": "https://github.com/srobinson/menubar-reveal/releases/download/v1.0.0/MenuBarReveal-1.0.0.dmg",
+  "minMacOS": "14",
+  "shareImageAlt": "A tabloid front page, Menu Bar Reveal, pasted on a painted wall in the middle of a yellow sun. The headline: SWIFT JUSTICE. Under it, a big red app icon, a bar over a down arrow, and a yellow box: GET IT ON GITHUB. A painted figure points at the page. Beside it, a small poster of a waiter serving a menu bar on his palm.",
+  "themeColor": "#6f6a62"
+}

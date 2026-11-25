@@ -3,7 +3,7 @@
   "private": true,
   "description": "menubarreveal.com: one hand written page. The tooling is lint, checks and a deploy step; nothing is built.",
   "scripts": {
-    "lint": "html-validate index.html 404.html && stylelint index.html \"assets/**/*.css\"",
+    "lint": "html-validate index.html 404.html && stylelint index.html \"assets/**/*.css\" && node tools/check.mjs",
     "csp": "node tools/csp.mjs --write",
     "serve": "node tools/serve.mjs",
     "deploy": "node tools/deploy.mjs"
