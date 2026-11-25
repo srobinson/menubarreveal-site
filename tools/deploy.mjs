@@ -9,10 +9,10 @@ import { execFileSync, spawn } from 'node:child_process';
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { root, siteFiles, withNoindex } from './site.mjs';
+import { HOSTS, smoke } from './smoke.mjs';
 
 const mode = process.argv[2] ?? '--dry-run';
 if (!['--dry-run', '--preview', '--live'].includes(mode)) { console.error('usage: npm run deploy [-- --preview | -- --live]'); process.exit(2); }
-const HOSTS = { '--preview': 'https://preview.menubarreveal.com', '--live': 'https://menubarreveal.com' };
 const run = (cmd, ...args) => execFileSync(cmd, args, { cwd: root, stdio: 'inherit' });
 const out = (cmd, ...args) => execFileSync(cmd, args, { cwd: root, encoding: 'utf8' });
 // However a run ends, the copies made for wrangler do not outlive it.
@@ -86,39 +86,8 @@ if (mode === '--preview') {
   await step('wrangler deploy: the site', () => wrangler('--env='));
 }
 
-// ---------- smoke check of the served site ----------
+// ---------- the served site against this folder (tools/smoke.mjs) ----------
 const host = HOSTS[mode];
-const fails = [];
-const check = (name, pass) => { console.log(`  ${pass ? 'pass' : 'FAIL'}  ${name}`); if (!pass) fails.push(name); };
-const get = (url, init) => fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(20000), ...init });
-await step(`smoke check ${host}`, async () => {
-  const page = readFileSync(join(root, 'index.html'), 'utf8');
-  let home;
-  for (let i = 0; i < 12; i += 1) { // the edge can take a few seconds to serve the new files
-    home = await get(`${host}/`).catch(() => null);
-    if (home?.status === 200 && (await home.clone().text()) === page) break;
-    await new Promise((r) => setTimeout(r, 5000));
-  }
-  check(`${host}/ returns 200`, home?.status === 200);
-  check(`${host}/ serves this index.html, byte for byte`, home && (await home.text()) === page);
-  const policy = readFileSync(join(root, '_headers'), 'utf8').match(/Content-Security-Policy:\s*(.*)/)[1].trim();
-  check('the Content-Security-Policy header is the one in _headers', home?.headers.get('content-security-policy') === policy);
-  const robotsTag = home?.headers.get('x-robots-tag') ?? '';
-  check('og.jpg returns 200', (await get(`${host}/og.jpg`)).status === 200);
-  check('a missing path returns 404', (await get(`${host}/no-such-page`)).status === 404);
-  const moved = await get(`${host}/index.html`);
-  check('/index.html answers 301 to /', moved.status === 301 && new URL(moved.headers.get('location'), host).pathname === '/');
-  if (mode === '--preview') check('every response says noindex', /noindex/i.test(robotsTag));
-  else {
-    check('the home page does not say noindex', !/noindex/i.test(robotsTag));
-    const robots = await (await get(`${host}/robots.txt`)).text();
-    check('robots.txt allows all and names the sitemap', /^Allow: \/$/m.test(robots) && !/^Disallow: \/$/m.test(robots) && robots.includes(`Sitemap: ${host}/sitemap.xml`));
-    check('sitemap.xml returns 200', (await get(`${host}/sitemap.xml`)).status === 200);
-    for (const from of ['http://menubarreveal.com/', 'https://www.menubarreveal.com/']) {
-      const hop = await get(from).catch(() => null);
-      check(`${from} answers 301 to ${host}/`, hop?.status === 301 && hop.headers.get('location') === `${host}/`);
-    }
-  }
-});
+const fails = await step(`smoke check ${host}`, () => smoke(mode));
 if (fails.length) stop(`${fails.length} smoke checks failed on ${host}`);
 console.log(`\ndeploy: ${host}/ is up${mode === '--preview' ? '. Look at it, then: npm run deploy -- --live' : ''}`);

@@ -25,6 +25,7 @@ The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one
 | `facts.json` | The product facts, once. Every copy of a fact in the site is checked against it. |
 | `tools/check.mjs`, `tools/csp.mjs` | The checks behind `npm run lint`, and the style hash in `_headers`. |
 | `tools/deploy.mjs`, `tools/product-facts.mjs`, `wrangler.toml`, `www-redirect/` | The deploy step, its check against the app's own repo, and the Cloudflare configuration for the site and the `www` redirect. |
+| `tools/smoke.mjs` | The check of the served site against this folder: the deploy's last step, and a command of its own. |
 | `tools/serve.mjs` | The site on your machine, with its real headers. |
 | `tools/site.mjs` | What those tools share: which files are the site (`.assetsignore`) and which headers a path gets (`_headers`). |
 | `tools/mural/` | The painter the wall came from, and the script that remakes its pictures. |
@@ -79,6 +80,8 @@ Each mode runs the same steps in order and stops at the first that fails:
 A run that stops names the step that failed, removes the copy it made for wrangler, and says whether the live deploy had started.
 
 Run the preview first, look at it, then go live.
+
+To check the served site against this folder again without deploying, `node tools/smoke.mjs --preview` or `--live`. It only reads. It needs curl, and resolves the hosts over DNS over HTTPS, so a stale DNS cache on your machine can neither fail it nor fake it.
 
 ### Roll back
 
