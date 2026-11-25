@@ -27,9 +27,9 @@ Open `index.html`. The words on the wall are plain text in `<body>`; change them
 
 The same facts are also said out of sight. When they change, change each of these too:
 
-- in `index.html`: `<title>`, the description (`<meta name="description">`, `og:description`, `twitter:description`, and `description` in the JSON-LD block), the share image's alt text, the stage photo's `aria-label` and the waiter picture's `alt`
+- in `index.html`: `<title>`, the description (`<meta name="description">`, `og:description`, `twitter:description`, and `description` in the first JSON-LD block; the second names the site), the share image's alt text, the stage photo's `aria-label` and the waiter picture's `alt`
 - `index.md` and `llms.txt`
-- on a new release: `softwareVersion` and `downloadUrl` in the JSON-LD block, and the download link in `index.md`
+- on a new release: the version and the download link in `index.md`
 - `sitemap.xml`: the `lastmod` date
 - `og.jpg` is a picture of the first screen: if the first screen changes, render it again and rewrite its alt text
 
