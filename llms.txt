@@ -4,5 +4,7 @@
 
 ## Links
 
+- [Web page](https://menubarreveal.com/): the poster.
 - [Product facts](https://menubarreveal.com/index.md): what it does, the shortcut, compatibility, install, price and privacy.
-- [Menu Bar Reveal on GitHub](https://github.com/srobinson/menubar-reveal): source, README and releases.
+- [Latest release](https://github.com/srobinson/menubar-reveal/releases/latest): the DMG and its release notes.
+- [README](https://github.com/srobinson/menubar-reveal#readme): install and the first open.
