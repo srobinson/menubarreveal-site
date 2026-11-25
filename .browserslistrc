@@ -1,0 +1,6 @@
+# Menu Bar Reveal needs macOS 14, which shipped with Safari 17 in 2023: the page supports the browsers of that time on.
+chrome >= 120
+edge >= 120
+firefox >= 121
+safari >= 17
+ios_saf >= 17

@@ -1,0 +1,16 @@
+{
+  "name": "menubarreveal-site",
+  "private": true,
+  "description": "menubarreveal.com: one hand written page. The only tooling is lint.",
+  "scripts": {
+    "lint": "html-validate index.html 404.html && stylelint index.html \"assets/**/*.css\"",
+    "serve": "node measurements/serve.mjs 8080"
+  },
+  "devDependencies": {
+    "html-validate": "^11.22.1",
+    "postcss-html": "^2.0.1",
+    "stylelint": "^17.16.0",
+    "stylelint-config-recommended": "^18.0.0",
+    "stylelint-no-unsupported-browser-features": "^8.1.2"
+  }
+}

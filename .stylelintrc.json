@@ -1,0 +1,9 @@
+{
+  "extends": "stylelint-config-recommended",
+  "plugins": ["stylelint-no-unsupported-browser-features"],
+  "overrides": [{ "files": ["**/*.html"], "customSyntax": "postcss-html" }],
+  "rules": {
+    "no-descending-specificity": null,
+    "plugin/no-unsupported-browser-features": [true, { "severity": "error", "ignorePartialSupport": true }]
+  }
+}
