@@ -10,7 +10,6 @@
   },
   "devDependencies": {
     "html-validate": "^11.22.1",
-    "playwright": "^1.59.1",
     "postcss-html": "^2.0.1",
     "stylelint": "^17.16.0",
     "stylelint-config-recommended": "^18.0.0",

@@ -20,4 +20,3 @@ package-lock.json
 tools
 wrangler.toml
 www-redirect
-measurements

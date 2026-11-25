@@ -1,8 +1,5 @@
 node_modules/
 .DS_Store
-measurements/parity/
-measurements/filmstrip/
-measurements/browsers/
 .wrangler/
 .preview/
 .deploy/
