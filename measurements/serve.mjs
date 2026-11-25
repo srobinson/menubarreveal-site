@@ -1,6 +1,7 @@
 // Serves this repo's site as it deploys, for checks: node measurements/serve.mjs [port] [folder]
 // (no port or 0: a free one, printed; folder: another built site, such as the launch kit's output, instead of this repo)
-// The folder is the repo root minus the dev files named in .assetsignore. Headers come from _headers. As the publish
+// The folder is the repo root minus the dev files named in .assetsignore. Headers come from _headers, redirects from
+// _redirects. As the publish
 // step does, style-src gains the sha256 of each <style> block in index.html (comments skipped, the block's exact text).
 // Like the live host: Brotli for text, an ETag with public, max-age=0, must-revalidate unless _headers says otherwise,
 // and 404.html for a missing path.
@@ -32,11 +33,17 @@ for (const line of readFileSync(join(root, '_headers'), 'utf8').split('\n')) {
 }
 const matches = (pattern, path) => (pattern.endsWith('*') ? path.startsWith(pattern.slice(0, -1)) : path === pattern);
 const policy = rules.flatMap((r) => r.headers).find(([name]) => name === 'Content-Security-Policy')[1];
-const csp = () => policy.replace("style-src 'self'", styleSrc());
+// upgrade-insecure-requests is left out here: this server is plain http, and WebKit obeys the directive even on
+// 127.0.0.1, turning every file request into https, which fails. On the https site it changes nothing.
+const csp = () => policy.replace("style-src 'self'", styleSrc()).replace(/;\s*upgrade-insecure-requests/, '');
 
 const packed = new Map();
+// _redirects: "from to status" on a line
+const redirects = existsSync(join(root, '_redirects')) ? readFileSync(join(root, '_redirects'), 'utf8').split('\n').filter((l) => l.trim() && !l.startsWith('#')).map((l) => l.trim().split(/\s+/)) : [];
 const server = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  const moved = redirects.find(([from]) => from === path);
+  if (moved) { res.writeHead(+moved[2], { Location: moved[1] }).end(); console.log(moved[2], path); return; }
   let file = normalize(join(root, path.endsWith('/') ? path + 'index.html' : path));
   let status = 200;
   const top = path.split('/')[1];

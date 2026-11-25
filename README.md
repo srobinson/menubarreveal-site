@@ -87,4 +87,4 @@ Every picture the wall is masked by must be opaque: one with see through parts w
 
 ## Measurements
 
-`measurements/` holds the checks behind this page and their results: `serve.mjs` (the local server), `parity.sh` (pixel comparison with the frozen v13 design), `lighthouse.mjs` (cold load numbers on one fixed network profile), `film.mjs` (a cold load, frame by frame). `measurements/results.md` is the summary.
+`measurements/` holds the checks behind this page and their results: `serve.mjs` (the local server), `parity.sh` (pixel comparison with the frozen v13 design), `lighthouse.mjs` (cold load numbers on one fixed network profile), `film.mjs` (a cold load in Chrome, frame by frame), `browsers.mjs` (the same in WebKit and Firefox, with Playwright). `measurements/results.md` is the summary.

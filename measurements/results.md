@@ -54,11 +54,24 @@ The phone's "first visual change" of 744 ms is Lighthouse's sampling of its own 
 | 390x844 | 2: the wall's colour at 298 ms, the whole page at 1714 ms | `filmstrip/390x844/strip.png`, `frames/`, `timeline.json` |
 
 In both: 11 requests, all 200; 0 failed or blocked requests; 0 entries in Chrome's console or Log (policy violations land in Log); 0 page errors.
-The header enforced: `default-src 'none'; script-src 'none'; img-src 'self' data:; style-src 'self' 'sha256-<the style block>'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests`.
+The header enforced for these runs: `default-src 'none'; script-src 'none'; img-src 'self' data:; style-src 'self' 'sha256-<the style block>'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests`. Since then `_headers` also allows the Cloudflare Web Analytics beacon (`script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com`), which the zone adds at the edge and which never runs locally.
 A wrong hash is caught: when the page changed under a server holding an old hash, Chrome refused the style block and the page rendered unstyled.
 
 With one picture blocked (`--block wall-relief`) the wall still shows, without that picture, once the others are in.
 With all pictures in, the mask is off after four seconds (`mask-image` computes to `none`).
+
+## WebKit and Firefox
+
+`browsers.mjs` (Playwright 1.59.1), cold profile, every response held back like a slow line, the policy enforced, screenshots as fast as the browser gives them:
+
+| Browser | 1858x1033 | 390x844 at 2x |
+| --- | --- | --- |
+| WebKit 26.4 | one paint: the wall's colour at 318 ms, the whole page at 740 ms | one paint: 256 ms, then 708 ms |
+| Firefox 148.0.2 | one paint: the wall's colour at 301 ms, the whole page at 908 ms | one paint: 266 ms, then 1258 ms |
+
+Neither showed a stage or a broken page, and neither logged an error of the page's own (WebKit's "Refused to apply a stylesheet" is Playwright's screenshot helper; a load without screenshots logs nothing).
+The times are not comparable with Chrome's above: here each response is delayed on its own, with no shared line.
+Locally `serve.mjs` leaves `upgrade-insecure-requests` out of the policy: over plain http WebKit obeys it even on 127.0.0.1 and every file request fails. On the https site the directive changes nothing.
 
 ## Pixel parity with v13
 
@@ -85,4 +98,4 @@ no policy violation and matched v13 at 1858x1033 within one pixel. Its favicons 
 
 ## Images are not in git
 
-`parity/` and `filmstrip/` are written by the scripts and ignored by git: run `bash measurements/parity.sh <url>` and `node measurements/film.mjs <url> <w> <h> <dpr> <out>` to make them again.
+`parity/`, `filmstrip/` and `browsers/` are written by the scripts and ignored by git: run `bash measurements/parity.sh <url>` and `node measurements/film.mjs <url> <w> <h> <dpr> <out>` to make them again.
