@@ -1,0 +1,30 @@
+# Cloudflare Workers static assets for menubarreveal.com. No Worker script: the site is this repo's files.
+# No account id or token here: wrangler uses the owner's `wrangler login` or the environment.
+# Deploy with `npm run deploy` (tools/deploy.mjs), which checks first; do not call wrangler by hand.
+name = "menubarreveal"
+compatibility_date = "2026-11-23"
+# The apex custom domain is this Worker's only host: no workers.dev alias, no preview URLs.
+# www.menubarreveal.com is its own Worker (www-redirect/), a 301 to the apex.
+workers_dev = false
+preview_urls = false
+routes = [{ pattern = "menubarreveal.com", custom_domain = true }]
+
+[assets]
+# .deploy/ is a copy of this repo's tracked files minus the dev files listed in .assetsignore. tools/deploy.mjs makes
+# it for each deploy and removes it after, so wrangler can never pick up node_modules or the tools.
+directory = "./.deploy"
+# A missing path gets 404.html with status 404. _redirects turns /index.html into a 301 to /.
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
+
+# The preview host: its own Worker on preview.menubarreveal.com. It serves .preview/, a copy of the site that
+# tools/deploy.mjs makes with X-Robots-Tag: noindex, nofollow on every response. Neither folder exists between deploys, so
+# a stray `wrangler deploy --env preview` fails instead of publishing an indexable copy.
+# Every key is set here because wrangler inherits name and routes from the top level when an environment leaves them
+# out, and deploys the top level with only a warning when --env names a missing environment. deploy.mjs checks these lines.
+[env.preview]
+name = "menubarreveal-preview"
+workers_dev = false
+preview_urls = false
+routes = [{ pattern = "preview.menubarreveal.com", custom_domain = true }]
+assets = { directory = "./.preview", not_found_handling = "404-page", html_handling = "auto-trailing-slash" }

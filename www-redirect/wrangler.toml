@@ -1,0 +1,8 @@
+# Worker menubarreveal-www: the www host only, a permanent redirect to the apex (worker.mjs). No assets, no bindings.
+# tools/deploy.mjs --live deploys it before the site; the default dry run checks both.
+name = "menubarreveal-www"
+main = "worker.mjs"
+compatibility_date = "2026-11-23"
+workers_dev = false
+preview_urls = false
+routes = [{ pattern = "www.menubarreveal.com", custom_domain = true }]

@@ -1,4 +1,5 @@
-# Dev files: everything else in this folder is the site. Cloudflare skips these on deploy; measurements/serve.mjs does too.
+# Dev files: everything else in this folder is the site. tools/deploy.mjs leaves these out of what it uploads, and
+# tools/serve.mjs does not serve them.
 .git
 .github
 .gitignore
@@ -6,8 +7,17 @@
 .browserslistrc
 .htmlvalidate.json
 .stylelintrc.json
+.deploy
+.preview
+.wrangler
+LICENSE
+NOTICE
 README.md
+facts.json
+node_modules
 package.json
 package-lock.json
-node_modules
+tools
+wrangler.toml
+www-redirect
 measurements

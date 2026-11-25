@@ -3,3 +3,6 @@ node_modules/
 measurements/parity/
 measurements/filmstrip/
 measurements/browsers/
+.wrangler/
+.preview/
+.deploy/
