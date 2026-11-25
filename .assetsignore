@@ -1,0 +1,13 @@
+# Dev files: everything else in this folder is the site. Cloudflare skips these on deploy; measurements/serve.mjs does too.
+.git
+.github
+.gitignore
+.assetsignore
+.browserslistrc
+.htmlvalidate.json
+.stylelintrc.json
+README.md
+package.json
+package-lock.json
+node_modules
+measurements

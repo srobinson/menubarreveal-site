@@ -1,0 +1,30 @@
+# Response headers for every file here (Cloudflare reads this file; measurements/serve.mjs applies it locally).
+# HTML, crawl files, icons and the share image keep the default caching (public, max-age=0, must-revalidate, ETag).
+# The page runs no script and loads nothing from another origin, so the policy denies by default.
+# style-src stays 'self': the page's one <style> block is allowed by its sha256, which the publish step adds
+# (it hashes the block as shipped, so an edit can never go out with a stale hash). The 404 page's styles are a file.
+# img-src keeps data: for the crease map inside the page's #warp filter and the torn edge mask in the 404 styles.
+# HSTS without preload: preloading is a separate decision and hard to undo.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: default-src 'none'; script-src 'none'; img-src 'self' data:; style-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+  X-Frame-Options: DENY
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), sync-xhr=(), usb=(), xr-spatial-tracking=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Agent discovery on the home page (RFC 8288).
+/
+  Link: </index.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"; type="text/plain", </sitemap.xml>; rel="sitemap"; type="application/xml"
+
+# Art and fonts never change in place: a changed file gets a new name (README, "Pictures and fonts").
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Agent alternate: served as Markdown, kept out of search as a duplicate of /.
+/index.md
+  Content-Type: text/markdown; charset=utf-8
+  X-Robots-Tag: noindex
+
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
