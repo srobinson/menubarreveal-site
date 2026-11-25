@@ -100,13 +100,16 @@ Cloudflare Web Analytics is added by the zone at the edge, so the beacon is not 
 
 ## How the page loads
 
-A cold load shows the wall's colour, then the whole page at once. Nothing is white and nothing arrives late:
+A cold load shows the wall's colour for an instant, then the whole page with a soft preview of every picture, then each picture as it arrives. Nothing is white, nothing moves, and the words can be read from the first paint:
 
 - the page background is the wall's colour, and the styles are in the page, so the first paint needs no second file
 - both fonts are preloaded and use `font-display: block`, so no text is drawn in a fallback face and then swapped
-- the wall is masked by its own pictures (`mask-image` on `.wall`). While a mask picture is loading the browser draws nothing of the wall, so wall, posters and type appear together when the last picture is in. After four seconds the mask comes off whatever has loaded.
+- a 24 px preview of every picture is in the styles as a data URL, so it is painted with the page
+- each picture is hung as two background layers, the file over its preview. A browser draws nothing of a layer whose file is still loading, so the preview shows; when the file is in, it covers the preview. Every picture is opaque, so no preview shows through afterwards. If a file never comes, its preview stays.
 
-The pictures are not preloaded with `<link>` tags: the styles ask for them the moment the page is parsed, and a preload for a picture that is also a mask only makes Chrome log a warning. A phone gets the middle strip of the wall, which is all it shows.
+Chrome and Firefox have the previews in their first paint. WebKit draws no picture in its first paint, not even an inline one: for about half a second it shows the wall's colour and blank paper, then the previews (seen in WebKit 26.4).
+
+There is no script in this, and no fade: the picture replaces its preview in one paint. The pictures are not preloaded with `<link>` tags: the styles ask for them the moment the page is parsed. A phone gets the middle strip of the wall, which is all it shows.
 
 ## Pictures and fonts
 

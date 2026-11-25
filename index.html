@@ -62,8 +62,12 @@
 <style>
 /* ==========================================================================
    Menu Bar Reveal: one page, a painted wall with a tabloid front page pasted on it.
-   No script and no motion. Sections: type, the pictures (written by the art step), the wall (and how it
-   appears in one paint), the side sheets, the front page, phones, wide screens.
+   No script and no motion. Sections: type, the pictures (written by the art step), the wall,
+   the side sheets, the front page, phones, wide screens.
+
+   How it appears. Text and a preview of every picture are in this file, so they are the first paint. Each
+   picture is hung as two layers, the file over its preview: nothing of the file is drawn until it has loaded,
+   then it covers the preview. Every picture is opaque, so no preview shows through afterwards.
 
    Units. The wall is a canvas of 1440 x 1500 "wall px"; --u is one wall px on screen.
    The front page is a sheet 1000 units wide; 1 unit is 0.1cqi.
@@ -143,18 +147,6 @@ body {
   min-height: var(--wall-h);
   padding: var(--pad-t) 16px 0;
   background: #3f7d86;
-
-  /* One paint. The wall is masked by its own pictures, as small tiles. While a mask picture is still loading
-     the browser draws nothing of the wall, so the page shows its background colour until the last picture is
-     in; then wall, sheets and type appear together. Every picture here is opaque (a see through one would
-     cut holes). If one is slow, the mask comes off after four seconds and the wall shows as it stands. */
-  mask-image: var(--mural), var(--relief), var(--plate), var(--crease), var(--grime), var(--ply);
-  mask-size: 16px 16px;
-  mask-composite: intersect;
-  animation: mask-off 0s 4s forwards;
-}
-@keyframes mask-off {
-  to { mask-image: none; }
 }
 .mural {
   position: absolute;
@@ -287,6 +279,8 @@ body {
   /* the preview, behind the picture: the picture is as tall as this box and 5:8, and the preview stops 2px
      short of it all round, so it never shows at the picture's edge */
   background: var(--ply-preview) center / calc(42.5cqh - 4px) calc(100% - 4px) no-repeat;
+  /* Firefox sets the alt text over the preview while the picture is on its way; it stays in the accessibility tree */
+  color: transparent;
   mix-blend-mode: multiply;
 }
 .ply h2 {
