@@ -9,7 +9,7 @@ The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one
 | File | What it is |
 | --- | --- |
 | `index.html` | The page: markup, one readable `<style>` block, and the SVG filters the styles call. No script. |
-| `assets/art/` | The page's nine pictures. |
+| `assets/art/` | The page's pictures. |
 | `assets/fonts/` | Anton and Tinos (the page) and Special Elite (the 404 page), with their licences: the first two SIL Open Font Licence, Special Elite Apache 2.0. |
 | `404.html`, `assets/404/` | The page for a missing address, its styles and pictures. |
 | `favicon.ico`, `favicon.svg`, `favicon-96.png`, `apple-touch-icon.png` | Icons. |
@@ -73,8 +73,8 @@ Files under `assets/` are cached for a year (`_headers`). A changed file gets a 
 
 | File | How it was made |
 | --- | --- |
-| `mural-1440.avif`, `mural-2880.avif` | The wall, sun at y 300 (phones). Painted by a script at 2880x3000, the small one scaled with Lanczos; `avifenc -q 62 -s 4`. |
-| `mural-sun450-1440.avif`, `mural-sun450-2880.avif` | The same wall with the sun at y 450 (wide screens); made the same way. |
+| `mural-strip-692.avif`, `mural-strip-1384.avif` | The wall for phones, sun at y 300: the middle 692 of its 1440 px, all a phone shows. Painted by a script at 2880x3000 (the small one scaled to 1440x1500 with Lanczos first), cropped at the centre; `avifenc -q 62 -s 4`. |
+| `mural-sun450-1440.avif`, `mural-sun450-2880.avif` | The whole wall with the sun at y 450 (wide screens): painted the same way, not cropped. |
 | `wall-relief.webp` | The wall's blockwork as light and shade, 1440x1500, in register with the mural. From the v13 design as it was; encoder settings not recorded. |
 | `plate.webp` | The stage in the front page photo, 1100x1540. From v13 as it was; settings not recorded. |
 | `crease-flyer.webp` | The front page's creases, 640x1040. From v13 as it was; settings not recorded. |

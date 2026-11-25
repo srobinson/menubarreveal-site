@@ -109,7 +109,6 @@ body {
   --band-top: calc(var(--pad-t) + min(100vw - 32px, 640px) * var(--sheet-ar));
   --wall-h: calc(var(--band-top) + var(--band) + var(--pad-b));
   --u: max(100vw / 1440, var(--wall-h) / 1500);
-  --mural: image-set(url(assets/art/mural-1440.avif) 1x, url(assets/art/mural-2880.avif) 2x);
   --textures: url(assets/art/wall-relief.webp), url(assets/art/plate.webp), url(assets/art/crease-flyer.webp), url(assets/art/grime.webp), url(assets/art/ply-halftone.webp);
   position: relative;
   overflow: hidden;
@@ -665,6 +664,16 @@ body {
    The puff stands beside the photo; the standfirst runs the full measure under them. The two side sheets
    hang in the band under the front page, placed in screen units. */
 @media (width < 700px) {
+  /* A phone sees only the middle of the wall, so its wall picture is that strip alone: the centre 692 of the
+     wall's 1440 px, hung in the middle of the mural's box. */
+  .wall {
+    --mural: image-set(url(assets/art/mural-strip-692.avif) 1x, url(assets/art/mural-strip-1384.avif) 2x);
+  }
+  .mural {
+    background-position: center;
+    background-size: calc(692 * var(--u)) 100%;
+    background-repeat: no-repeat;
+  }
   .front {
     --read-l: 3.5cqi;
     --read-t: 117.4cqi;
