@@ -10,13 +10,13 @@ The site for [Menu Bar Reveal](https://github.com/srobinson/menubar-reveal): one
 | --- | --- |
 | `index.html` | The page: markup, one readable `<style>` block, and the SVG filters the styles call. No script. |
 | `assets/art/` | The page's nine pictures. |
-| `assets/fonts/` | Anton and Tinos (the page), Special Elite (the 404 page), with their licences. |
+| `assets/fonts/` | Anton and Tinos (the page) and Special Elite (the 404 page), with their licences: the first two SIL Open Font Licence, Special Elite Apache 2.0. |
 | `404.html`, `assets/404/` | The page for a missing address, its styles and pictures. |
 | `favicon.ico`, `favicon.svg`, `favicon-96.png`, `apple-touch-icon.png` | Icons. |
 | `og.jpg` | The share image: the page's first screen at 1200x630. |
 | `index.md`, `llms.txt` | The product facts as Markdown, for agents. |
 | `robots.txt`, `sitemap.xml` | For crawlers. |
-| `_headers` | Response headers, the Content Security Policy among them. |
+| `_headers`, `_redirects` | Response headers, the Content Security Policy among them; and one redirect, `/index.html` to `/`. |
 
 **Dev files** (never deployed; `.assetsignore` lists them for the host):
 `README.md`, `package.json`, `package-lock.json`, `.browserslistrc`, `.htmlvalidate.json`, `.stylelintrc.json`, `.assetsignore`, `.gitignore`, `.github/`, `measurements/`, `node_modules/`.
@@ -81,7 +81,7 @@ Files under `assets/` are cached for a year (`_headers`). A changed file gets a 
 | `grime.webp` | Paper grime, a 900x900 tile. From v13 as it was; settings not recorded. |
 | `ply-halftone.webp` | The waiter, 500x800. From v13 as it was; settings not recorded. |
 | `Anton-400.woff2`, `Tinos-700.woff2` | Latin subsets (232 and 235 characters) as WOFF2, from v13 as they were. SIL Open Font Licence, in `assets/fonts/licences/`. |
-| `SpecialElite-400.woff2`, `assets/404/*` | The 404 page's face and pictures, as the live site served them on 2026-11-25. |
+| `SpecialElite-400.woff2`, `assets/404/*` | The 404 page's face (Apache 2.0, in `assets/fonts/licences/`) and pictures, as the live site served them on 2026-11-25. |
 
 Every picture the wall is masked by must be opaque: one with see through parts would cut holes in the page.
 
