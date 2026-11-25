@@ -12,10 +12,11 @@ export const HOSTS = { '--preview': 'https://preview.menubarreveal.com', '--live
 const DOH = process.env.DOH || 'https://cloudflare-dns.com/dns-query';
 
 // One request, redirects not followed: { status, headers, body }, header names in lower case. Status 0: no answer.
-const get = (url) => {
+// accept: the Accept header to send; curl's own is */*.
+const get = (url, accept = '*/*') => {
   let text;
   try {
-    text = execFileSync('curl', ['-sS', '-i', '--doh-url', DOH, '--max-time', '20', url], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024 });
+    text = execFileSync('curl', ['-sS', '-i', '--doh-url', DOH, '--max-time', '20', '-H', `Accept: ${accept}`, url], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024 });
   } catch (error) {
     console.log(`  ${url}: ${String(error.stderr || error.message).trim().split('\n')[0]}`);
     return { status: 0, headers: new Map(), body: '' };
@@ -73,16 +74,26 @@ export const smoke = async (mode) => {
     const wrong = want.filter(([name, value]) => served.headers.get(name.toLowerCase()) !== value).map(([name]) => name);
     check(`${path} is served with the ${want.length} headers _headers gives it${wrong.length ? `; wrong or missing: ${wrong.join(', ')}` : ''}`, !wrong.length);
   }
-  const robotsTag = home.headers.get('x-robots-tag') ?? '';
+  // The home page as Markdown (worker.mjs): index.md's bytes at the home page's address, with the headers _headers
+  // gives /index.md, except that its word on indexing and its links are the home page's. Both answers say Vary: Accept.
+  const markdown = get(`${host}/`, 'text/markdown');
+  const ofHome = ([name]) => ['x-robots-tag', 'link'].includes(name.toLowerCase());
+  const wantMarkdown = [...headersFor(rules, '/index.md').filter((header) => !ofHome(header)), ...headersFor(rules, '/').filter(ofHome)];
+  const wrongMarkdown = wantMarkdown.filter(([name, value]) => markdown.headers.get(name.toLowerCase()) !== value).map(([name]) => name);
+  check(`/ asked for as Markdown (Accept: text/markdown) returns 200 with its ${wantMarkdown.length} headers${wrongMarkdown.length ? `; wrong or missing: ${wrongMarkdown.join(', ')}` : ''}`, markdown.status === 200 && !wrongMarkdown.length);
+  check('/ asked for as Markdown serves this index.md, byte for byte', markdown.body === readFileSync(join(root, 'index.md'), 'utf8'));
+  const variesOnAccept = (served) => (served.headers.get('vary') ?? '').split(',').some((name) => name.trim().toLowerCase() === 'accept');
+  check('/ says Vary: Accept, as the page and as Markdown', variesOnAccept(home) && variesOnAccept(markdown));
+  const robotsTag = `${home.headers.get('x-robots-tag') ?? ''} ${markdown.headers.get('x-robots-tag') ?? ''}`;
   check('og.jpg returns 200', get(`${host}/og.jpg`).status === 200);
   check('a missing path returns 404', get(`${host}/no-such-page`).status === 404);
   redirect(`${host}/index.html?q=1`, `${host}/?q=1`);
   // On the preview too: a crawler that robots.txt turns away never reads the noindex, and the address can still be indexed.
   const robots = get(`${host}/robots.txt`).body;
   check('robots.txt allows crawling', /^Allow: \/$/m.test(robots) && !/^Disallow: \/$/m.test(robots));
-  if (mode === '--preview') check('every response says noindex', /noindex/i.test(robotsTag));
+  if (mode === '--preview') check('the home page says noindex, as the page and as Markdown', /noindex.*noindex/i.test(robotsTag));
   else {
-    check('the home page does not say noindex', !/noindex/i.test(robotsTag));
+    check('the home page does not say noindex, as the page or as Markdown', !/noindex/i.test(robotsTag));
     check('robots.txt names the sitemap', robots.includes(`Sitemap: ${host}/sitemap.xml`));
     check('sitemap.xml returns 200', get(`${host}/sitemap.xml`).status === 200);
     redirect('http://menubarreveal.com/', `${host}/`);
