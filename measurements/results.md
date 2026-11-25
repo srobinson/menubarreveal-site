@@ -86,6 +86,25 @@ Locally `serve.mjs` leaves `upgrade-insecure-requests` out of the policy: over p
 v13 against itself is not perfectly stable: three shots of v13 at 1440x900 differed from each other by 3 to 6 pixels, by 1 of 255. One pixel is inside that noise.
 An earlier pass had about 1500 pixels off by up to 2 inside the front page photo: the mask was stretched over the wall, which made Chrome decode the stage picture at full size and resample it. The mask is now small tiles (`mask-size: 16px 16px`), which leaves each picture's own decode alone.
 
+## The phone's strip of the wall (added after the tables above)
+
+A phone shows under half the wall's width, so its wall picture is now the centre 692 of the wall's 1440 px (`mural-strip-692.avif`, `mural-strip-1384.avif`), cropped from the same painting and encoded with the same settings. The painter reproduces `mural-2880.avif` byte for byte, so the strip is a first encode, not a copy of a copy.
+
+| Phone, 390x844 at 2x, same profile | Whole wall | Strip |
+| --- | --- | --- |
+| Total bytes | 1285 kB | 884 kB |
+| Last visual change | 1779 ms | 1354 ms |
+| Speed Index | 1779 | 1353 |
+| Requests | 12 | 12 |
+
+Still two frames on a cold load (`results/after-phone-strip.json`, `filmstrip/390x844`). Desktop is unchanged.
+
+Parity after the strip: 1858x1033 and 1440x900 still match v13 (0 pixels, and 1 off by 1). At 390x844 the page is no longer pixel for pixel v13's and cannot be: the strip is a different AV1 encode of the same painting. 24% of pixels differ, by 0.44 of 255 on average, 0.2% by more than 8. At file resolution the strip is as close to the painting (mean 1.58) as v13's file is (1.61). Shifting the strip one pixel either way makes the match much worse, so it hangs where the wall did. At some widths the strip's box rounds to device pixels differently from the wall's and sits a fraction of a pixel off (320 px wide: mean 1.15).
+A lossless strip would keep exact parity and weigh 4.3 MB.
+The strip covers the screen at every width under 700 px: the widest share a phone layout shows is 46.2% of the wall, at 699 px, and the strip is 48.1%. Checked at 699, 412 and 320 px wide.
+
+Not cropped: `wall-relief.webp` (401 kB, about 190 kB to save on a phone). The old notes give its recipe in words; the painter's relief layer run through that recipe does not reproduce the file, and cropping the lossy file means encoding it a second time.
+
 ## The launch kit's build of this folder
 
 `site-kit/kit.mjs` run on this folder into a temporary folder (the kit was read, not changed): it took the page, renamed its 11 art and font files with hashes,
