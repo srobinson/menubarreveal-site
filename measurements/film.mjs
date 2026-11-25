@@ -1,6 +1,5 @@
-// Written by tm/frontend (claude-fable-5-2).
-// A cold load filmstrip: node film.mjs <url> <width> <height> <dpr> <out dir> [--no-throttle] [--block <url part>]
-// Starts headless Chrome on a new, empty profile (cold cache, cold connection), turns the cache off, throttles the
+// A cold load filmstrip: node measurements/film.mjs <url> <width> <height> <dpr> <out dir> [--no-throttle] [--block <url part>]
+// Starts headless Chrome on a new, empty profile (cold cache, cold connection; the cache itself stays on, as for a visitor), throttles the
 // network to DevTools' "Fast 4G" (9 Mbit/s down and 1.5 Mbit/s up, each times 0.9; 165 ms added to every request),
 // records every presented frame and a performance trace, and writes into <out dir>:
 //   frames/<ms>.jpg   every frame Chrome presented (Page.startScreencast) that differs from the one before; the name is ms after navigation start
@@ -66,7 +65,6 @@ listeners.push((msg) => {
 
 await page('Emulation.setDeviceMetricsOverride', { width: +W, height: +H, deviceScaleFactor: +DPR, mobile: +W < 700 });
 await page('Page.enable'); await page('Network.enable'); await page('Log.enable'); await page('Runtime.enable');
-await page('Network.setCacheDisabled', { cacheDisabled: true });
 if (throttle) await page('Network.emulateNetworkConditions', FAST_4G);
 if (block) await page('Network.setBlockedURLs', { urls: [`*${block}*`] });
 await send('Tracing.start', { transferMode: 'ReportEvents', traceConfig: { includedCategories: ['devtools.timeline', 'loading', 'blink.user_timing'] } });

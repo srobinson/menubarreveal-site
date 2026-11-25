@@ -56,14 +56,7 @@
 }
 </script>
 
-<!-- Every file the first screen draws is asked for with the page, so none is found late. The wall waits for them (see "One paint"). -->
-<link rel="preload" as="image" type="image/avif" imagesrcset="assets/art/mural-1440.avif 1x, assets/art/mural-2880.avif 2x" media="(width < 700px)" fetchpriority="high">
-<link rel="preload" as="image" type="image/avif" imagesrcset="assets/art/mural-sun450-1440.avif 1x, assets/art/mural-sun450-2880.avif 2x" media="(width >= 700px)" fetchpriority="high">
-<link rel="preload" as="image" type="image/webp" href="assets/art/wall-relief.webp" fetchpriority="high">
-<link rel="preload" as="image" type="image/webp" href="assets/art/plate.webp" fetchpriority="high">
-<link rel="preload" as="image" type="image/webp" href="assets/art/crease-flyer.webp" fetchpriority="high">
-<link rel="preload" as="image" type="image/webp" href="assets/art/grime.webp" fetchpriority="high">
-<link rel="preload" as="image" type="image/webp" href="assets/art/ply-halftone.webp" fetchpriority="high">
+<!-- Both faces are asked for with the page; the pictures are asked for by the styles below, in the same instant. -->
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Anton-400.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Tinos-700.woff2" crossorigin>
 
