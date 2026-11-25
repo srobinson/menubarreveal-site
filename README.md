@@ -130,7 +130,7 @@ So, to change a picture: optimise it, put it in `assets/art/` under its plain na
 background: var(--plate) 0 0 / 100% 100%, var(--plate-preview) 0 0 / 100% 100%;
 ```
 
-Every picture must be opaque, so that it covers its preview. The step can also encode a picture itself: give its entry a lossless `master`, the `widths` and the `encode` options (the top of `tools/art.mjs` says how). No picture here is made that way yet: the files below are the approved ones, byte for byte.
+Every picture must be opaque, so that it covers its preview. The step can also encode a picture itself: give its entry a lossless `master`, the `widths` and the `encode` options (the top of `tools/art.mjs` says how). The four wall pictures are made that way.
 
 ### Where each file came from
 
@@ -138,8 +138,8 @@ A file's name in the repo has the digest before its extension.
 
 | File | How it was made |
 | --- | --- |
-| `mural-strip-692.avif`, `mural-strip-1384.avif` | The wall for phones, sun at y 300: the middle 692 of its 1440 px. `bash tools/mural/art.sh` paints it (seeded, 2880x3000), crops it and encodes it with `avifenc -q 62 -s 4`; `npm run art` then names it. |
-| `mural-sun450-1440.avif`, `mural-sun450-2880.avif` | The whole wall for wide screens, sun at y 450. The same script, the same settings. |
+| `mural-strip-692.avif`, `mural-strip-1384.avif` | The wall for phones, sun at y 300: the middle 692 of its 1440 px. `bash tools/mural/art.sh` paints it (seeded, 2880x3000) and leaves the strip as a lossless master in `tools/mural/masters/` (not committed); `npm run art` encodes both widths from it with Sharp's AVIF at quality 50, effort 4. |
+| `mural-sun450-1440.avif`, `mural-sun450-2880.avif` | The whole wall for wide screens, sun at y 450. The same two steps, the same settings. |
 | `wall-relief.webp` | The wall's blockwork as light and shade, 1440x1500, lossy WebP. As it came from the design; its source and encoder settings were not kept. |
 | `plate.webp` | The stage in the front page photo, 1100x1540, lossless WebP. As it came; source not kept. |
 | `crease-flyer.webp` | The front page's creases, 640x1040, lossy WebP. As it came; source and settings not kept. |
@@ -148,7 +148,7 @@ A file's name in the repo has the digest before its extension.
 | `Anton-400.woff2`, `Tinos-700.woff2` | Latin subsets (232 and 235 characters) as WOFF2, as they came. SIL Open Font Licence. |
 | `SpecialElite-400.woff2`, `assets/404/*` | The 404 page's face (Apache 2.0) and pictures, as they came. The art step does not touch them. |
 
-`art.sh` reproduces the four wall pictures byte for byte with libavif 1.4.2 and aom 3.15.3, so their names do not change; another encoder version may give different bytes for the same painting. The painter draws its figures from the silhouettes in `tools/mural/src/`.
+With the masters on disk and the pinned Eleventy Image (Sharp 0.35.5), `npm run art` gives the same bytes each time, so the names do not change; another Sharp version may give different bytes for the same painting. Without the masters it leaves the committed wall pictures as they are. The painter draws its figures from the silhouettes in `tools/mural/src/`.
 
 ## Licence
 
