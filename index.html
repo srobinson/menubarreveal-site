@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu Bar Reveal: Swift justice</title>
+<meta name="description" content="By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.">
+<link rel="canonical" href="https://menubarreveal.com/">
+<meta name="theme-color" content="#6f6a62">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="alternate" type="text/markdown" href="/index.md" title="Menu Bar Reveal as Markdown">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Menu Bar Reveal">
+<meta property="og:url" content="https://menubarreveal.com/">
+<meta property="og:title" content="Menu Bar Reveal: Swift justice">
+<meta property="og:description" content="By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.">
+<meta property="og:image" content="https://menubarreveal.com/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A brick wall painted with a yellow sunburst. Pasted in the middle, a tabloid front page: Menu Bar Reveal, under the headline Swift Justice. A red app icon, a menu bar over a down arrow, sits beside the line Your hidden Mac menu bar, on one shortcut. Free. A yellow box reads Get it on GitHub. A smaller sheet to the right reads An icon for your menu bar. Painted figures point toward the page.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Menu Bar Reveal: Swift justice">
+<meta name="twitter:description" content="By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.">
+<meta name="twitter:image" content="https://menubarreveal.com/og.jpg">
+<meta name="twitter:image:alt" content="A brick wall painted with a yellow sunburst. Pasted in the middle, a tabloid front page: Menu Bar Reveal, under the headline Swift Justice. A red app icon, a menu bar over a down arrow, sits beside the line Your hidden Mac menu bar, on one shortcut. Free. A yellow box reads Get it on GitHub. A smaller sheet to the right reads An icon for your menu bar. Painted figures point toward the page.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Menu Bar Reveal",
+  "url": "https://menubarreveal.com/",
+  "description": "By default, press Option and backtick to show the hidden macOS menu bar. Free, for macOS 14 or later.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "macOS 14 or later",
+  "softwareVersion": "1.0.0",
+  "isAccessibleForFree": true,
+  "license": "https://opensource.org/license/mit",
+  "image": "https://menubarreveal.com/og.jpg",
+  "sameAs": [
+    "https://github.com/srobinson/menubar-reveal"
+  ],
+  "author": {
+    "@type": "Person",
+    "name": "Stuart Robinson"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "downloadUrl": "https://github.com/srobinson/menubar-reveal/releases/download/v1.0.0/MenuBarReveal-1.0.0.dmg"
+}
+</script>
+
+<!-- Every file the first screen draws is asked for with the page, so none is found late. The wall waits for them (see "One paint"). -->
+<link rel="preload" as="image" type="image/avif" imagesrcset="assets/art/mural-1440.avif 1x, assets/art/mural-2880.avif 2x" media="(width < 700px)" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" imagesrcset="assets/art/mural-sun450-1440.avif 1x, assets/art/mural-sun450-2880.avif 2x" media="(width >= 700px)" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" href="assets/art/wall-relief.webp" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" href="assets/art/plate.webp" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" href="assets/art/crease-flyer.webp" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" href="assets/art/grime.webp" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" href="assets/art/ply-halftone.webp" fetchpriority="high">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Anton-400.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Tinos-700.woff2" crossorigin>
+
+<style>
+/* ==========================================================================
+   Menu Bar Reveal: one page, a painted wall with a tabloid front page pasted on it.
+   No script and no motion. Sections: type, the wall, one paint, the side sheets,
+   the front page, wide screens, phones.
+
+   Units. The wall is a canvas of 1440 x 1500 "wall px"; --u is one wall px on screen.
+   The front page is a sheet 1000 units wide; 1 unit is 0.1cqi.
+   ========================================================================== */
+
+/* ---------- type ----------
+   font-display: block, and both faces are preloaded: no text is ever set in a fallback face and then swapped. */
+@font-face {
+  font-family: Anton;
+  src: url(assets/fonts/Anton-400.woff2) format("woff2");
+  font-display: block;
+}
+@font-face {
+  font-family: Tinos;
+  font-weight: 700;
+  src: url(assets/fonts/Tinos-700.woff2) format("woff2");
+  font-display: block;
+}
+
+:root {
+  --ink: #191613;
+  --red: #d1281b;
+  --paper: #ebe5d3;
+  --glue: rgba(78, 60, 28, .22);
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+/* The page background is the wall's own colour, so the first paint is never white. */
+html {
+  background: #6f6a62;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  min-height: 100svh;
+  overflow-x: hidden;
+  color: var(--ink);
+}
+
+/* ---------- the wall ----------
+   One painted mural, anchored top centre and scaled to cover. Phones first: the front page, then a band
+   where the side sheets hang. --sheet-ar is the front page's height over its width. */
+.wall {
+  --sheet-ar: 1.4;
+  --pad-t: clamp(56px, 7vw, 104px);
+  --pad-b: 64px;
+  --band: calc(75vw + 36px);
+  --band-top: calc(var(--pad-t) + min(100vw - 32px, 640px) * var(--sheet-ar));
+  --wall-h: calc(var(--band-top) + var(--band) + var(--pad-b));
+  --u: max(100vw / 1440, var(--wall-h) / 1500);
+  --mural: image-set(url(assets/art/mural-1440.avif) 1x, url(assets/art/mural-2880.avif) 2x);
+  --textures: url(assets/art/wall-relief.webp), url(assets/art/plate.webp), url(assets/art/crease-flyer.webp), url(assets/art/grime.webp), url(assets/art/ply-halftone.webp);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: var(--wall-h);
+  padding: var(--pad-t) 16px 0;
+  background: #3f7d86;
+}
+.mural {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 720 * var(--u));
+  z-index: 0;
+  width: calc(1440 * var(--u));
+  height: calc(1500 * var(--u));
+  background: var(--mural) 0 0 / 100% 100%;
+}
+/* the daylight: the mural's own, so it stops where the bare wall under it starts */
+.daylight {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 3;
+  height: var(--wall-h);
+  background:
+    radial-gradient(120% 80% at 18% 0%, rgba(255, 248, 226, .28), transparent 60%),
+    radial-gradient(140% 120% at 50% 40%, transparent 55%, rgba(0, 0, 0, .28));
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+/* the svg at the foot of the page holds the filters: it takes no room */
+.filters {
+  position: absolute;
+}
+
+/* ---------- one paint ----------
+   The wall is masked by its own pictures. A mask picture that has not loaded is a blank mask, so the wall
+   stays out of sight, the page showing its background colour, until the last picture is in; then wall,
+   sheets and type appear together. Every picture here is opaque (a see through one would cut holes).
+   If one never comes, the mask is taken off after four seconds and the wall shows as it stands. */
+.wall {
+  mask-image: var(--mural), var(--textures);
+  mask-size: 16px 16px;
+  mask-composite: intersect;
+  animation: mask-off 0s 4s forwards;
+}
+@keyframes mask-off {
+  to { mask-image: none; }
+}
+
+/* ---------- the side sheets ----------
+   Each sheet hangs at --x --y, --w by --h, in wall px. --L is its left edge measured from the wall's centre
+   line and --T its top. Under each is a paste stain. Its torn edge is a clip-path (inner), then roughened
+   and aged by a filter (outer). */
+.sheets {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.po,
+.stain {
+  --L: calc((var(--x) - 720) * var(--u));
+  --T: calc(var(--y) * var(--u));
+  --Wd: calc(var(--w) * var(--u));
+  --Ht: calc(var(--h) * var(--u));
+  position: absolute;
+  top: var(--T);
+  left: calc(50% + var(--L));
+  width: var(--Wd);
+  height: var(--Ht);
+  transform: rotate(var(--r));
+}
+.po {
+  filter: url(#tear) saturate(var(--faded));
+}
+.po > .in {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+  background: var(--bg);
+  color: var(--fg, var(--ink));
+  font-family: Anton;
+  text-align: center;
+  text-transform: uppercase;
+}
+.po > .in::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url(assets/art/grime.webp) 0 0 / 600px 600px;
+  mix-blend-mode: multiply;
+  opacity: .5;
+  pointer-events: none;
+}
+.po h2,
+.po h2 > span {
+  display: block;
+  font: inherit;
+  font-weight: 400;
+}
+/* paste: a damp halo round each sheet */
+.stain::before {
+  content: "";
+  position: absolute;
+  inset: -1.8% -1.4%;
+  background: var(--glue);
+  filter: blur(3px);
+}
+/* pasted for real: the wall's own relief (wall-relief.webp, in register with the mural) runs on through
+   the paper, and the brush left a few wrinkles, lit from the top left */
+.thru,
+.wrinkle {
+  position: absolute;
+  mix-blend-mode: hard-light;
+  pointer-events: none;
+}
+.thru {
+  top: calc(var(--ms, 0px) - var(--T));
+  left: calc(-720 * var(--u) - var(--L));
+  width: calc(1440 * var(--u));
+  height: calc(1500 * var(--u));
+  background: url(assets/art/wall-relief.webp) 0 0 / 100% 100%;
+  opacity: var(--thru);
+  transform: rotate(calc(var(--r) * -1));
+  transform-origin: calc(720 * var(--u) + var(--L) + var(--Wd) / 2) calc(var(--T) + var(--Ht) / 2);
+}
+.wrinkle {
+  inset: 0;
+  background: #808080;
+  filter: url(#wrinkle);
+  opacity: var(--wr, .5);
+}
+
+/* Ply: the figure and his line, black on off white */
+.ply {
+  --bg: #ece7dc;
+  --r: -1.2deg;
+  --thru: .6;
+  --faded: .82;
+}
+.ply > .in {
+  padding: 5% 6% 0;
+  clip-path: polygon(14.00% 0.00%, 100.00% 0.00%, 100.00% 100.00%, 0.00% 100.00%, -1.57% 97.77%, -2.39% 95.54%, 0.11% 93.31%, 1.13% 91.09%, 1.04% 88.86%, -0.98% 86.63%, -0.16% 84.40%, 0.22% 82.17%, 0.81% 79.94%, 2.03% 77.71%, 0.41% 75.49%, 1.78% 73.26%, 1.46% 71.03%, 1.78% 68.80%, 1.38% 66.57%, 1.81% 64.34%, -0.16% 62.11%, 1.49% 59.89%, 0.84% 57.66%, 0.68% 55.43%, -0.71% 53.20%, -0.72% 50.97%, -1.32% 48.74%, 0.28% 46.51%, 1.31% 44.29%, 1.47% 42.06%, 1.32% 39.83%, 2.29% 37.60%, 1.61% 35.37%, 1.64% 33.14%, 2.36% 30.91%, 1.26% 28.69%, -0.17% 26.46%, 0.18% 24.23%, 0.00% 22.00%, 1.96% 20.67%, 3.73% 19.22%, 3.43% 16.46%, 4.78% 14.74%, 5.83% 12.83%, 7.07% 11.04%, 7.34% 8.64%, 8.21% 6.62%, 9.72% 5.00%, 11.17% 3.35%, 11.67% 1.10%);
+}
+.ply img {
+  display: block;
+  width: 100%;
+  height: 68cqh;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.ply h2 {
+  margin-top: 2.5cqw;
+  font-size: 15.6cqw;
+  line-height: .94;
+  filter: url(#ink);
+}
+
+/* the lost notice: a photocopy on white bond, the missing bar an empty frame */
+.lost {
+  --bg: #edece7;
+  --fg: #2a2623;
+  --r: 1.6deg;
+  --thru: .6;
+  --faded: .94;
+}
+.lost > .in {
+  padding: 8% 8% 0;
+  clip-path: polygon(0.00% 0.00%, 100.00% 0.00%, 100.00% 100.00%, 97.82% 101.59%, 95.65% 101.92%, 93.47% 102.58%, 91.29% 102.68%, 89.12% 100.27%, 86.94% 98.60%, 84.76% 100.64%, 82.59% 101.39%, 80.41% 101.07%, 78.24% 100.59%, 76.06% 99.58%, 73.88% 100.19%, 71.71% 100.55%, 69.53% 99.37%, 67.35% 98.98%, 65.18% 98.48%, 63.00% 99.07%, 60.82% 98.53%, 58.65% 99.47%, 56.47% 99.51%, 54.29% 100.39%, 52.12% 100.13%, 49.94% 99.19%, 47.76% 100.90%, 45.59% 101.29%, 43.41% 99.66%, 41.24% 98.77%, 39.06% 98.44%, 36.88% 99.37%, 34.71% 100.11%, 32.53% 98.72%, 30.35% 100.09%, 28.18% 100.49%, 26.00% 100.00%, 23.97% 99.22%, 22.40% 97.37%, 20.10% 97.23%, 18.65% 95.09%, 16.42% 94.78%, 14.15% 94.57%, 11.88% 94.36%, 9.98% 93.28%, 7.73% 93.02%, 6.33% 90.75%, 4.27% 90.05%, 2.76% 88.06%, 0.00% 89.00%);
+}
+.lost h2 > .big {
+  font-size: 41cqw;
+  line-height: .84;
+  letter-spacing: .03em;
+}
+.lost h2 > .what {
+  font-size: 17.4cqw;
+  line-height: .9;
+  white-space: nowrap;
+}
+.lost .frame {
+  display: block;
+  height: 15cqw;
+  margin: 6cqw 0 5cqw;
+  border: 1.2cqw solid currentColor;
+  border-radius: 1.6cqw;
+  background: radial-gradient(circle, rgba(42, 38, 35, .5) 0 28%, transparent 32%) 0 0 / 2.4cqw 2.4cqw;
+}
+.lost p {
+  margin-top: 5cqw;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 8cqw;
+  font-weight: 700;
+  line-height: 1.16;
+  text-transform: none;
+}
+
+/* ---------- the front page ----------
+   A red top tabloid, pasted up. --icon-* is where the app icon sits (in the photo); --read-* is the
+   standfirst's box, which also tells the sheet where to hold its creases back. */
+.post {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 640px);
+  margin: 0 auto;
+  container-type: inline-size;
+}
+.front {
+  --corner: clamp(50px, 15.5cqi, 108px);
+  --icon-l: 9.38cqi;
+  --icon-t: 75.06cqi;
+  --icon-w: 32.22cqi;
+  --r: -.5deg;
+  position: relative;
+  z-index: 2;
+  transform: rotate(var(--r));
+}
+/* the paste that soaked out round the sheet */
+.halo {
+  position: absolute;
+  inset: -34px -40px -22px -32px;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(96deg, transparent 0 6px, rgba(70, 50, 20, .10) 6px 9px, transparent 9px 17px, rgba(70, 50, 20, .06) 17px 19px, transparent 19px 31px),
+    rgba(118, 96, 62, .30);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent), linear-gradient(180deg, transparent, #000 4%, #000 96%, transparent);
+  mask-composite: intersect;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+/* the sheet: cut on the fold of its peeled corner (top right); the bottom left corner came away with the
+   last poster, a ragged walk */
+.sheet {
+  --thru: .44;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / var(--sheet-ar);
+  container-type: inline-size;
+  background: var(--paper);
+  clip-path: polygon(0 0, calc(100% - var(--corner)) 0, 100% var(--corner), 100% 100%, 26.8% 100%, 25.99% calc(100% - 0.15cqi), 25.28% calc(100% - 0.66cqi), 24.41% calc(100% - 0.57cqi), 23.73% calc(100% - 1.18cqi), 22.91% calc(100% - 1.28cqi), 22.09% calc(100% - 1.36cqi), 21.17% calc(100% - 1.12cqi), 20.53% calc(100% - 1.87cqi), 19.69% calc(100% - 1.92cqi), 18.86% calc(100% - 1.98cqi), 18.09% calc(100% - 2.26cqi), 17.23% calc(100% - 2.22cqi), 16.47% calc(100% - 2.52cqi), 15.69% calc(100% - 2.76cqi), 14.91% calc(100% - 3.01cqi), 14.24% calc(100% - 3.69cqi), 13.46% calc(100% - 3.92cqi), 12.62% calc(100% - 3.95cqi), 11.91% calc(100% - 4.43cqi), 11.08% calc(100% - 4.52cqi), 10.16% calc(100% - 4.27cqi), 9.52% calc(100% - 5.01cqi), 8.71% calc(100% - 5.16cqi), 7.91% calc(100% - 5.32cqi), 7.12% calc(100% - 5.53cqi), 6.44% calc(100% - 6.13cqi), 5.69% calc(100% - 6.51cqi), 4.91% calc(100% - 6.75cqi), 3.96% calc(100% - 6.39cqi), 3.24% calc(100% - 6.85cqi), 2.31% calc(100% - 6.54cqi), 1.64% calc(100% - 7.21cqi), 0.72% calc(100% - 6.95cqi), 0% calc(100% - 7.4cqi));
+  filter: url(#warp) drop-shadow(0 1px 1px rgba(0, 0, 0, .25));
+}
+/* newsprint yellows where the paste soaked through */
+.sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(40% 18% at 12% 96%, rgba(120, 90, 40, .20), transparent 70%),
+    radial-gradient(30% 12% at 86% 3%, rgba(120, 90, 40, .16), transparent 70%),
+    radial-gradient(22% 30% at 98% 60%, rgba(120, 90, 40, .14), transparent 70%),
+    url(assets/art/grime.webp) 0 0 / 600px 600px;
+  mix-blend-mode: multiply;
+  opacity: .42;
+  pointer-events: none;
+}
+/* the paper's creases, as light: held back over the icon (a fresh pass of red, laid on last) and over the standfirst */
+.sheet::after {
+  --calm:
+    linear-gradient(rgba(0, 0, 0, .72), rgba(0, 0, 0, .72)) var(--icon-l) var(--icon-t) / var(--icon-w) var(--icon-w) no-repeat,
+    linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .55)) var(--read-l) var(--read-t) / var(--read-w) var(--read-h) no-repeat,
+    linear-gradient(#000, #000);
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: url(assets/art/crease-flyer.webp) 0 0 / 100% 100%;
+  mask: var(--calm);
+  mask-composite: exclude;
+  mix-blend-mode: hard-light;
+  opacity: .56;
+  pointer-events: none;
+}
+/* thin paper: the wall's blockwork shows through, placed from this sheet's spot on the wall (its middle is
+   the wall's centre line, its top is --pad-t), and held back like the creases */
+.sheet > .thru {
+  --hole:
+    linear-gradient(rgba(0, 0, 0, .66), rgba(0, 0, 0, .66)) calc(720 * var(--u) - 50cqi + var(--icon-l)) calc(var(--pad-t) - var(--ms, 0px) + var(--icon-t)) / var(--icon-w) var(--icon-w) no-repeat,
+    linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .55)) calc(720 * var(--u) - 50cqi + var(--read-l)) calc(var(--pad-t) - var(--ms, 0px) + var(--read-t)) / var(--read-w) var(--read-h) no-repeat,
+    linear-gradient(#000, #000);
+  top: calc(var(--ms, 0px) - var(--pad-t));
+  left: calc(50cqi - 720 * var(--u));
+  z-index: 1;
+  mask: var(--hole);
+  mask-composite: exclude;
+  transform-origin: calc(720 * var(--u)) calc(var(--pad-t) - var(--ms, 0px) + 50cqi * var(--sheet-ar));
+}
+
+/* the red top. Anton's capitals sit in the middle of the line box, so a band's line height is its height */
+.mast {
+  position: absolute;
+  top: 3.5cqi;
+  right: 3.5cqi;
+  left: 3.5cqi;
+  overflow: hidden;
+  height: 7.8cqi;
+  padding-left: 2.2cqi;
+  background: var(--red);
+  color: var(--paper);
+  font: 400 6.9cqi/7.8cqi Anton;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  filter: url(#ink-flood);
+}
+.mast span {
+  display: inline-block;
+  transform: skewX(-11deg);
+}
+/* the strap: the line above the splash */
+.strap {
+  position: absolute;
+  top: 12.4cqi;
+  right: 3.5cqi;
+  left: 3.5cqi;
+  height: 5.8cqi;
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 4.6cqi/5.8cqi Anton;
+  letter-spacing: .1em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  filter: url(#ink-flood);
+}
+/* the splash: "Swift" over "justice". The long word fills the measure; the short one, leaning like the
+   masthead, has the height that is left, and the streaks behind it fill its line. Capitals are .867em tall
+   and start .056em below the line box top, which keeps the three gaps round the two lines even. */
+.splash {
+  font: inherit;
+}
+.splash span {
+  position: absolute;
+  right: 0;
+  left: 0;
+  display: block;
+  color: var(--ink);
+  font-family: Anton;
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  filter: url(#ink-flood);
+}
+.splash .l1 {
+  top: 20.25cqi;
+  right: 5.2cqi;
+  left: 3.5cqi;
+  font-size: 19.26cqi;
+  text-align: right;
+  transform: skewX(-11deg);
+}
+.splash .l1::before {
+  --streak: linear-gradient(var(--ink), var(--ink));
+  content: "";
+  position: absolute;
+  top: .056em;
+  left: 1.8cqi;
+  width: calc(100% - 2.2em - 1.8cqi);
+  height: .867em;
+  background:
+    var(--streak) 100% 5% / 100% 17% no-repeat,
+    var(--streak) 100% 37% / 58% 10% no-repeat,
+    var(--streak) 100% 63% / 82% 14% no-repeat,
+    var(--streak) 100% 93% / 40% 9% no-repeat;
+}
+.splash .l2 {
+  top: 39.35cqi;
+  font-size: 32.3cqi;
+}
+
+/* the front page photo: a stage plate and its crowd, cropped to the pool of light; the icon is printed over it */
+.photo {
+  position: absolute;
+  top: 72.3cqi;
+  left: 3.5cqi;
+  overflow: hidden;
+  width: 44cqi;
+  height: 41.4cqi;
+  box-shadow: inset 0 0 0 .3cqi var(--ink);
+}
+.stage,
+.crowd {
+  position: absolute;
+  top: -16.12cqi;
+  left: -6.77cqi;
+  width: 57.54cqi;
+  height: 80.57cqi;
+}
+.stage {
+  background: url(assets/art/plate.webp) 0 0 / 100% 100%;
+  mix-blend-mode: multiply;
+  filter: url(#ink-flood);
+}
+.crowd {
+  clip-path: inset(0 0 28.6% 0);
+}
+.crowd .rows {
+  fill: var(--ink);
+  filter: url(#ink-flood);
+}
+.crowd .screens {
+  fill: var(--paper);
+}
+.crowd .tiny {
+  fill: var(--red);
+}
+
+/* the standfirst: the one thing the page says in plain type. Tinos has Times's measure. */
+.standfirst {
+  position: absolute;
+  top: var(--read-t);
+  left: var(--read-l);
+  overflow: hidden;
+  width: var(--read-w);
+  max-height: var(--read-h);
+  font-family: Tinos, "Times New Roman", Times, serif;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* the call to action: the page's one link, holding two printed things, the icon and the yellow puff.
+   The link has no box of its own. Nothing moves; hover and press are a change of ink. */
+.get {
+  outline: 0;
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* the icon: the app icon (red tile, the bar, the arrow) in a solid pass of red. White prints as bare paper
+   under the multiply blend, so the focus ring is a knocked out line inside the tile. */
+.icon {
+  position: absolute;
+  top: var(--icon-t);
+  left: var(--icon-l);
+  z-index: 2;
+  display: block;
+  width: var(--icon-w);
+  height: var(--icon-w);
+  border-radius: calc(var(--icon-w) * .2245);
+  background: var(--red);
+  mix-blend-mode: multiply;
+  filter: url(#press);
+}
+.get:hover .icon {
+  background: #dc3122;
+}
+.get:active .icon {
+  background: #b92217;
+}
+.get:focus-visible .icon {
+  outline: calc(var(--icon-w) * .02) solid #fff;
+  outline-offset: calc(var(--icon-w) * -.06);
+}
+.icon .bar {
+  position: absolute;
+  top: 27.91%;
+  left: 22.82%;
+  width: 54.37%;
+  height: 13.59%;
+  border-radius: 99cqi;
+  background: #fff;
+}
+.icon .arrow {
+  position: absolute;
+  top: 47.33%;
+  left: 26.7%;
+  overflow: visible;
+  width: 46.6%;
+  height: 27.18%;
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+/* the puff: the yellow flash a red top prints by its picture, in the sun's yellow */
+.puff {
+  position: absolute;
+  left: 49.7cqi;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 46.8cqi;
+  background: #e8b53c;
+  box-shadow: inset 0 0 0 .55cqi var(--ink);
+  color: var(--ink);
+  font-family: Anton;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  filter: url(#ink-flood);
+}
+.get:hover .puff {
+  background: #f3c64e;
+}
+.get:active .puff {
+  background: #d7a42e;
+}
+.get:focus-visible .puff {
+  outline: 3px solid var(--red);
+  outline-offset: 3px;
+}
+.puff .lead {
+  margin-right: -.1em;
+  letter-spacing: .1em;
+}
+.puff .name {
+  margin-right: -.01em;
+  letter-spacing: .01em;
+}
+
+/* newsprint: the masthead's ears (bars for words) and the fibre along the torn corner */
+.newsprint {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 13cqi;
+  fill: none;
+  pointer-events: none;
+}
+.newsprint.head {
+  top: 0;
+}
+.newsprint.foot {
+  bottom: 0;
+}
+.newsprint .ears {
+  opacity: .74;
+  stroke: var(--paper);
+  stroke-width: 6.5;
+}
+.newsprint .fibre {
+  opacity: .74;
+  stroke: #fbf8ee;
+  stroke-linejoin: round;
+  stroke-width: 9;
+}
+
+/* the peeled corner: the curl turns the sheet's pale back over the print */
+.curl {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  overflow: visible;
+  width: var(--corner);
+  height: var(--corner);
+  pointer-events: none;
+}
+
+/* ---------- phones ----------
+   The puff stands beside the photo; the standfirst runs the full measure under them. The two side sheets
+   hang in the band under the front page, placed in screen units. */
+@media (width < 700px) {
+  .front {
+    --read-l: 3.5cqi;
+    --read-t: 117.4cqi;
+    --read-w: 93cqi;
+    --read-h: 14cqi;
+  }
+  .standfirst {
+    font-size: 5.9cqi;
+  }
+  .puff {
+    top: 72.3cqi;
+    height: 41.4cqi;
+    padding-top: .6cqi;
+  }
+  .puff .lead {
+    font-size: 9.9cqi;
+  }
+  .puff .name {
+    font-size: 15.76cqi;
+  }
+  .po,
+  .stain {
+    --L: var(--left);
+    --T: calc(var(--band-top) + var(--down));
+    --Wd: var(--wide);
+    --Ht: var(--tall);
+    --wr: .3;
+  }
+  .ply {
+    --left: -45vw;
+    --down: 26px;
+    --wide: 42vw;
+    --tall: 73vw;
+  }
+  .lost {
+    --left: 4vw;
+    --down: 40px;
+    --wide: 41vw;
+    --tall: 54vw;
+  }
+}
+
+/* ---------- wide screens ----------
+   The whole front page fits the first screen, --gap of wall above and below; the standfirst and the puff
+   stand beside the photo, so the sheet is shorter. The mural is the one painted with its sun at y 450;
+   where the screen is short for its width it slides up by --ms, so the sun stays behind the middle of the
+   front page. The page stops 72 wall px short of the mural's foot, above its strip of bare block. */
+@media (width >= 700px) {
+  .wall {
+    --sheet-ar: 1.22;
+    --gap: max(44px, 10svh);
+    --pw: min(100vw - 32px, 720px, (100svh - 2 * var(--gap)) / var(--sheet-ar));
+    --pad-t: calc((100svh - var(--pw) * var(--sheet-ar)) / 2);
+    --mural-h: max(100svh, 1500px, 104.1667vw);
+    --u: calc(var(--mural-h) / 1500);
+    --ms: min(0px, 50svh - 450 * var(--u));
+    --wall-h: max(100svh, var(--mural-h) + var(--ms) - 72 * var(--u));
+    --mural: image-set(url(assets/art/mural-sun450-1440.avif) 1x, url(assets/art/mural-sun450-2880.avif) 2x);
+  }
+  .mural {
+    top: var(--ms);
+  }
+  .post {
+    width: var(--pw);
+  }
+  .front {
+    --read-l: 49.7cqi;
+    --read-t: 72.1cqi;
+    --read-w: 46.8cqi;
+    --read-h: 15cqi;
+    --r: -.7deg;
+  }
+  .halo {
+    right: -16px;
+  }
+  .standfirst {
+    font-size: 4.2cqi;
+  }
+  .puff {
+    top: 88cqi;
+    height: 25.7cqi;
+    padding-top: .5cqi;
+  }
+  .puff .lead {
+    font-size: 7.2cqi;
+  }
+  .puff .name {
+    font-size: 14.4cqi;
+  }
+  /* Ply hangs in the first screen, between the sun's ring and the tall figure; both sheets ride with the mural */
+  .ply {
+    --x: 1080;
+    --y: 178;
+    --w: 200;
+    --h: 348;
+  }
+  .lost {
+    --x: 776;
+    --y: 1086;
+    --w: 204;
+    --h: 262;
+  }
+  .ply,
+  .lost {
+    --T: calc(var(--y) * var(--u) + var(--ms));
+  }
+}
+</style>
+</head>
+<body>
+<main class="wall">
+  <div class="mural" aria-hidden="true"></div>
+
+  <div class="post">
+    <div class="halo" aria-hidden="true"></div>
+    <article class="front" aria-labelledby="title">
+      <div class="sheet">
+        <p class="mast"><span>Menu Bar Reveal</span></p>
+        <p class="strap">A single icon for your menu bar</p>
+        <h1 id="title" class="splash"><span class="l1">Swift</span> <span class="l2">justice</span></h1>
+        <div class="photo" aria-hidden="true">
+          <div class="stage"></div>
+          <svg class="crowd" viewBox="0 0 1000 1400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path class="rows" d="M2.8 967.4L2.6 979L-4.5 987.3L-13.1 992.5L-22.9 992.4L-31.6 987.5L-37.3 978.3L-39.2 967.4L-38.3 955.9L-31.1 948.1L-22.8 942.6L-13.1 942L-3.8 946.4L1.5 956.3ZM35 1022.3L34.4 1035.6L23.2 1047L7 1055.5L-12.6 1059.8L-33.1 1058.9L-52.2 1054.7L-70.1 1047.5L-76.3 1034.7L-80.8 1022.3L-79.5 1009.1L-69.7 997.2L-51.4 990.8L-33.2 985.1L-12.2 983.2L6.9 989.1L20.9 998.7L33.7 1009.1ZM108 972.8L106.1 983.6L100.5 992.5L91.5 995.5L82.8 995.2L74 992.2L67.8 983.7L66.2 972.8L67.7 961.8L74 953.5L82.6 949.7L91.5 950.2L100 953.9L104.4 963ZM149.7 1023.7L143.7 1035.6L136.5 1047.3L118.8 1052.8L102.3 1059.1L82.5 1060.1L64.8 1054.5L49.4 1046.8L40.6 1035.8L35.3 1023.7L40.9 1011.7L48.4 1000L63.5 991.5L83 989.1L102.4 987.7L120.2 993L133.7 1001.6L142.1 1012.1ZM74.4 955.1L75.4 927.7L84.4 955.1L77.5 955.1L80.1 933.3L87.5 955.1L80.6 955.1L84.8 931.4L90.6 955.1L83.7 955.1L89.5 929.9L93.7 955.1L86.8 955.1L94.2 931.2L96.8 955.1L89.9 955.1L98.9 930.5L99.9 955.1ZM205.1 966.5L202.9 977.4L197.6 987L188.2 989.6L178.7 992.2L169.7 987.2L164 977.7L162.3 966.5L164.9 955.9L169.9 946.2L178.9 941.9L188.4 942.3L196.6 947.5L202.9 955.7ZM241.1 1019.6L235.3 1032.3L226.7 1044.2L208.6 1050.4L190.4 1054.6L170.3 1057.5L151.4 1052.1L137.6 1042.8L124.9 1032.6L123.9 1019.6L124.6 1006.5L136.7 995.9L151.9 987.6L171 984.2L190.4 984.7L210.4 986.7L226.6 995L233.6 1007.2ZM318.7 972.3L316.7 983.2L310.8 992L302.5 998.4L292.5 997.6L282.8 993.9L277.5 983.6L274.4 972.3L275.8 960.1L283.3 951.6L292.3 945.6L302.3 947.4L311.8 951.2L317.8 960.8ZM354.4 1028.9L352.2 1042.4L342.1 1054.6L325 1062.9L304.8 1066.9L283.7 1067.7L263.6 1063.1L249 1053.3L235.8 1042.6L230.9 1028.9L236.6 1015.5L247 1003.5L264.5 995.8L283.4 989.1L304.9 990.7L323.9 996.2L341.8 1003.4L351.5 1015.6ZM308.4 946.5L306.7 950.5L303.7 953.5L299.9 956L295.1 956L290.9 954L288.5 950.4L287.5 946.5L288.5 942.6L291.2 939.4L295.1 936.9L299.9 937.2L304 939.1L306.8 942.5ZM433.1 967.3L432.9 980.1L425.9 990.4L415.3 993.6L404.6 996.1L395.1 989.6L388 979.9L387.3 967.3L387.4 954.4L394.2 943.7L404.5 938.1L415.5 940.3L424.8 945.9L431.8 955.1ZM479.3 1028.2L473.6 1043L460.4 1055.3L441.9 1063.7L421.5 1070.1L398.3 1070.3L375.2 1066.6L360.2 1054.9L350.4 1042L344 1028.2L344.9 1013L357.6 1000L378.3 993.1L398.3 986.1L421.7 985.5L444.2 990.2L460.6 1001L471.2 1013.9ZM424.8 939.5L423.1 943.7L420.5 947.5L415.9 949.2L411 949.5L406.3 947.7L404.1 943.7L402.3 939.5L403.1 935L406.3 931.4L411 929.4L415.9 930.1L420.2 932L423.8 935.1ZM549.6 963.2L545.9 975.3L539.2 985L529.8 990.9L519.2 989.8L510.1 984.3L502.5 975.5L499.4 963.2L501.3 950.1L509.3 940.9L518.7 934L530 934.2L539.3 941.3L547.3 950.2ZM590.9 1023.7L587.1 1038.3L576.1 1051.6L555.8 1058.8L535.9 1066.6L513.2 1063.1L491.8 1059.5L471.2 1052L461.1 1038.3L455.5 1023.7L460.6 1008.9L476.2 997.9L492.8 989L512.6 982.2L534.9 984.3L557 987.2L574.9 996.3L585.9 1009.3ZM496.8 960.5L563.9 962.6L562.5 966.8L496.8 968.4ZM649.6 964.4L647.1 976.3L642.2 988.1L631.5 992.3L620.4 994.1L611 986.6L604.3 976.7L600.3 964.4L604.5 952.2L610.8 941.9L620.7 936.5L631.5 936.9L642.3 940.5L648.6 951.7ZM688.9 1026L685.3 1040.9L673.7 1054L653.8 1061.7L632.8 1066.7L610.4 1066.6L589.4 1061.7L568.7 1054.4L557.5 1041L557.9 1026L558.7 1011.4L570.9 998.8L587.8 988.5L609.5 981.9L632.8 985.4L655.9 988L674.8 997.5L686.6 1010.9ZM750 967L747.7 980.4L740.2 991L729.4 995.6L718.3 995.9L707 991.8L700.4 980.2L698 967L700.8 953.9L707.9 943.4L718 936.9L729.5 938.3L739.7 943.7L747.8 953.4ZM788.5 1031.1L785.4 1046.6L773.7 1060.5L754.1 1070L731.4 1076.3L707.1 1074.4L684.3 1069.6L663.2 1061.1L655.9 1045.8L651.9 1031.1L653.6 1015.9L665.7 1002.5L683 991.3L707 987.5L731.1 987.3L754.6 991.7L773.7 1001.7L786.8 1015.3ZM709.1 944.6L710.1 915L719.1 944.6L713 944.6L715.6 909.2L723 944.6L716.9 944.6L721.1 915.9L726.9 944.6L720.8 944.6L726.6 915.6L730.8 944.6L724.7 944.6L732.1 917.4L734.7 944.6L728.7 944.6L737.7 909.7L738.7 944.6ZM855.3 971.5L853.6 983.1L846.2 990.9L838.3 998.5L828.2 996.8L819.8 991L813.3 982.7L810.6 971.5L814 960.7L818.8 950.5L828.2 946.6L838 946.1L847.3 950.6L854.1 959.6ZM895 1027.5L893.7 1041.2L883.7 1053.7L866.1 1062.1L845.1 1064.4L824.7 1064.6L806 1059.6L790.3 1051.5L780.6 1040.2L776.5 1027.5L775.3 1013.6L787.5 1002L803.9 993L824.6 990L845.6 988.6L863.9 995.4L883.8 1001.2L890.6 1014.5ZM978.8 971.4L976 983.7L970.6 995.2L960 1000.2L949.2 998.2L939.4 993.5L931.2 984.6L931.1 971.4L932.3 958.9L938.3 947.8L948.7 942.2L960.2 941.7L970 948.5L975.9 959.3ZM1022.2 1033.1L1020.6 1047.7L1010.4 1061.3L992.3 1071.1L970.2 1077.4L946.6 1074.5L924.9 1069.8L908 1060L892.5 1048.4L892.7 1033.1L893.1 1018L904.5 1004.4L925.9 997.5L945.8 988.8L969.2 992.6L991.7 995.8L1008.9 1005.8L1018.5 1019ZM940 950L941 917.6L950 950L943.8 950L946.4 919.5L953.8 950L947.5 950L951.7 920.5L957.5 950L951.3 950L957.1 918.8L961.3 950L955.1 950L962.5 917.2L965.1 950L958.8 950L967.8 917.3L968.8 950ZM66.8 938.2L64.4 947.8L60.2 957.1L52.1 962.3L42.8 961.6L35.4 955.8L30 948L27 938.2L29.6 928.2L34.9 919.8L42.8 914.9L51.9 914.9L60.4 919L66.5 927.4ZM95.6 988.3L91.9 1000L81.9 1010L68.5 1018.2L50.9 1022.1L32.5 1021.4L14.4 1018.4L-1.8 1011.6L-9 1000.1L-12 988.3L-10.7 976.2L1.7 966.9L13.4 957L31.9 953.1L51.2 953.4L68.5 958.5L81.6 966.9L92.8 976.4ZM157.6 943.6L155.2 954.7L149.6 964.3L140.5 969.2L130.6 968.7L122.4 963L115.9 954.7L112.9 943.6L115.3 932.2L122.4 924.3L130.9 919.7L140.2 919.6L148.5 924.5L153.7 933.3ZM191.1 997.2L185.6 1010.1L176.1 1021.8L160.6 1030.8L140.5 1034.1L120.6 1032.5L102.1 1028.5L86.3 1020.8L74.4 1010.2L73.1 997.2L73.5 984L86 973.4L101.3 965L120.4 961.3L140.7 959.6L160.8 963.4L174.8 973.3L185 984.4ZM144.4 919.1L143.3 922.9L140.7 926L136.8 927.8L132.5 927.7L128.8 925.8L126.2 922.8L124.5 919.1L126.3 915.5L128.6 912.2L132.4 910.4L136.7 910.8L141 911.9L143.1 915.4ZM267.6 941.3L265.9 950.8L260.6 958.1L253.5 963.6L245.2 961.6L237.9 957.9L232.2 950.9L229.4 941.3L232.3 931.8L237.3 923.9L244.8 918.9L253.4 919.3L260.8 924.1L266.4 931.5ZM305.8 988.2L299.7 998.9L293.1 1009.4L280.1 1017.5L262.1 1019.2L244.9 1019.5L227.1 1017.5L216.1 1008.3L206.5 999.1L202.1 988.2L204.2 976.7L213.5 966.6L228.4 960.3L244.5 955.1L262.6 955.2L279.5 959.4L291.2 967.9L300.3 977.3ZM237 925L238 900.9L247 925L239.8 925L242.4 901.4L249.8 925L242.7 925L246.9 899.6L252.7 925L245.5 925L251.3 903.2L255.5 925L248.4 925L255.8 901.4L258.4 925L251.2 925L260.2 903.2L261.2 925ZM368.5 943.4L367.4 953.1L362.6 961.6L354.6 965.9L346.3 963.5L338.7 960.4L333.1 953.1L330.6 943.4L333.1 933.7L339 926.8L346.2 922.7L354.2 922.8L361.8 926.4L367.8 933.5ZM404 990.2L401.7 1001.4L393.6 1011.5L380.1 1019.3L363.1 1023.6L345.3 1021.4L327.4 1019.5L316.6 1010.2L305.7 1001.4L301.7 990.2L306.5 979.2L316.7 970.2L327.3 960.8L345.2 958.7L362.9 957.6L378.2 963.2L393.2 969.1L401.6 979.1ZM484.6 945.6L482.8 956.5L475.9 963.8L468.1 969.4L459.2 968L451.2 963.7L443.9 956.7L442.6 945.6L444.3 934.7L450 925.7L458.9 922.1L468.1 922.2L476.6 926.3L481.9 935.2ZM522.7 997L516.7 1008.9L508.1 1019.8L492.9 1027.2L475.8 1033.9L455.8 1032.9L436.9 1028.8L423.1 1019.9L411.1 1009.7L407.9 997L414.9 985.2L424.1 974.7L437.5 965.9L455.7 960.7L475 963L493.5 966.1L509.5 973.4L520.2 984.3ZM440 943.4L497 945.1L495.9 948.7L440 950.1ZM598 939.2L595.2 948.2L591.1 956.7L583.4 960.8L574.8 961.7L567.2 956.9L562.4 948.7L559.6 939.2L562 929.5L567.7 922.3L575 917.6L583.3 917.9L591.1 921.7L597 929.1ZM622.8 986.1L620.3 997L613 1007.3L600.3 1015.7L582.9 1019.7L564.9 1017.6L547.5 1015L535 1006.8L527.9 996.7L521.6 986.1L525.9 975L533.5 964.5L548.9 958.6L565.1 955.4L582.6 953.3L598.4 958.5L611.4 965.8L621.1 975ZM703.7 936.3L701.5 946.3L696.4 955L688.5 960.8L679 960.6L670.8 955.4L665.9 946.4L663.2 936.3L665.8 926.2L670.9 917.5L678.9 911.7L688.2 913.3L696.7 917.1L702.1 925.9ZM746 987.9L740.6 1000.2L729.5 1010.3L715.2 1018.2L697.9 1024.1L678.1 1023.5L660.9 1017.9L646.6 1010.1L634.6 1000.4L629.2 987.9L634.1 975.4L645.4 965.1L659.1 956L677.9 951.7L697.5 953.2L714.6 958.4L732.4 964L741.6 975.4ZM689.2 912.7L689 916.5L686.1 919.3L682.4 921L678.2 920.8L674.4 919.4L671.4 916.6L670.7 912.7L671.8 909L674.7 906.4L678.2 904.6L682.4 904.4L686.3 905.9L688.8 909ZM805.8 943.4L803.8 952.2L799.6 960.3L792.3 964.8L784.2 963.7L776.8 960.1L771.4 952.8L770.2 943.4L772.4 934.4L776.6 926.3L784.1 922.5L792.2 922.8L799.2 927.1L805.2 933.7ZM840 989L840.1 1000L829.1 1008.6L818.1 1017.1L801.6 1021.3L784.2 1019.7L767.7 1016.7L754.5 1009.5L745.7 999.9L742.5 989L747.8 978.5L754.7 968.6L769 962.8L783.8 956.8L801.3 957.6L817.7 961.3L832.2 967.8L840.5 977.9ZM776.2 927.5L777.2 908.3L786.2 927.5L779 927.5L781.6 906.6L789 927.5L781.8 927.5L786 908.4L791.8 927.5L784.6 927.5L790.4 905.5L794.6 927.5L787.3 927.5L794.7 908.2L797.3 927.5L790.1 927.5L799.1 905.3L800.1 927.5ZM921.9 939.2L920 949.9L913.3 957L905.6 962.1L896.9 961.2L888.1 958.5L882.4 949.9L881.6 939.2L883.4 929.2L888.3 920.2L896.6 915.8L905.7 915.8L913.5 921.2L919 929.2ZM951.4 989.6L950.5 1001.9L940 1012.2L925.1 1019.7L907 1022.6L888.1 1025.4L869.8 1020.9L854.9 1012.8L845.7 1001.8L842.4 989.6L848.2 978.1L857.3 967.8L869.9 958.6L888.3 954.5L907.5 955L924.4 960.3L939.5 967.3L950.3 977.5ZM80.8 1000.1L112.8 821.5L97.2 818.5L59.2 995.9ZM92.1 818.1L117.9 821.9L123.7 796.5L94.1 792.1ZM94.5 794.1L100.9 795.1L102.7 773.1L97.6 772.4ZM101.5 795.2L107.8 796.1L110.9 769.3L105.8 768.5ZM108.4 796.2L114.7 797.2L118.5 769.5L113.4 768.7ZM115.3 797.3L121.6 798.2L125.3 775.5L120.1 774.8ZM94 812.3L92.3 803.9L79.8 785.9L85.4 782.6L97.1 798.6ZM178.9 991.9L160 837.2L144 838.8L157.1 994.1ZM165.1 824.1L161.5 832.5L155.1 838.9L146.3 838.3L138.8 833.2L136.9 824.1L139.5 815.4L146.1 809.3L155 809.5L161.9 815.3ZM140.8 817L146.6 814.4L134.5 783.5L128.8 787.1ZM151.6 813.9L157.8 815.3L163.6 783.6L157.4 781.2ZM340.3 994.1L325.5 963.2L310.5 968.8L319.7 1001.9ZM301.5 956.8L333.5 955.2L330.7 899.3L298.7 900.9ZM332 960L329.9 967.1L322.3 971.4L313.2 971.2L305 967.4L302.3 960L305.8 953.1L313 948.5L322.3 948.7L329.5 953.1ZM479.9 997.8L499.2 951.5L484.8 944.5L460.1 988.2ZM508.1 932L505.2 942.2L497.2 947.5L488.3 947.7L480.2 942.4L477.5 932L480.3 921.7L488 915.3L497.5 915.6L505.5 921.6ZM649.5 1005.6L666.9 970.1L653.1 961.9L630.5 994.4ZM645.1 954.5L676.9 957.6L682.5 901.9L650.7 898.7ZM676.3 960L673.1 967.3L665.3 971.5L656.2 970.9L648.6 967L646.1 960L647.9 952.7L655.9 948.4L665.2 948.7L673.3 952.6ZM868.9 997.4L887.9 829L872.1 827L847.1 994.6ZM867.1 826.4L892.9 829.6L898 804L868.2 800.4ZM868.8 802.5L875.1 803.2L876.3 781.2L871.1 780.6ZM875.7 803.3L882.1 804.1L884.4 777.2L879.2 776.5ZM882.7 804.1L889 804.9L892 777.1L886.9 776.5ZM889.6 805L896 805.8L898.9 782.9L893.8 782.3ZM868.8 820.6L866.8 812.3L853.8 794.6L859.2 791.3L871.5 806.8ZM945.8 1000.8L915.8 866.4L900.2 869.6L924.2 1005.2ZM921.2 852.2L917.9 862.3L910.2 868.1L901.1 867.9L893.9 861.8L891 852.2L893.4 842.1L901 836.3L910.4 835.5L917.8 842.1Z"/>
+            <g class="screens"><path d="M304.8 951.6L329.7 950.4L327.4 904.5L302.5 905.7Z"/><path d="M649.1 949.8L673.9 952.3L678.5 906.6L653.7 904.1Z"/></g>
+            <rect class="tiny" x="655.8" y="920.2" width="16" height="16" rx="3.6" transform="rotate(5.7 663.8 928.2)"/>
+          </svg>
+        </div>
+        <p class="standfirst">Your hidden Mac menu bar, on one shortcut. Free.</p>
+        <svg class="newsprint head" viewBox="0 0 1000 130" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path class="ears" d="M610 57h62m7 0h38m7 0h76M664 74h44m7 0h85M700 91h100"/>
+        </svg>
+
+        <svg class="newsprint foot" viewBox="0 0 1000 130" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path class="fibre" d="M266.9 133.9L258.9 132.4L251.8 127.3L243 128.2L236.3 122.1L228 121.1L219.8 120.2L210.7 122.6L204.2 115.2L195.9 114.7L187.6 114L179.9 111.2L171.3 111.6L163.6 108.6L155.8 106.2L148 103.7L141.4 97L133.6 94.6L125.2 94.3L118 89.5L109.8 88.6L100.6 91.2L94.1 83.7L86.1 82.2L78 80.7L70.1 78.6L63.3 72.5L55.9 68.8L48 66.4L38.6 69.9L31.4 65.3L22 68.5L15.4 61.8L6.2 64.4L-1.1 59.9"/>
+        </svg>
+        <a class="get" href="https://github.com/srobinson/menubar-reveal"><span class="icon" aria-hidden="true"><span class="bar"></span><svg class="arrow" viewBox="3 7.5 12 7" focusable="false"><path d="M5 9L9 13L13 9"/></svg></span><span class="puff"><span class="lead">Get it on</span> <span class="name">GitHub</span></span></a>
+        <i class="thru"></i>
+      </div>
+      <svg class="curl" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+        <defs>
+          <!-- across the roll, from its crest on the fold to the tip turning away -->
+          <linearGradient id="curl-back" gradientUnits="userSpaceOnUse" x1="55" y1="45" x2="19" y2="81">
+            <stop offset="0" stop-color="#cfc6ae"/><stop offset=".06" stop-color="#fffdf3"/><stop offset=".2" stop-color="#f6f0df"/>
+            <stop offset=".5" stop-color="#e7dec8"/><stop offset=".82" stop-color="#d3c8ad"/><stop offset="1" stop-color="#b9ad90"/>
+          </linearGradient>
+          <linearGradient id="curl-lift" gradientUnits="userSpaceOnUse" x1="50" y1="50" x2="22" y2="78">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <path id="curl-shape" d="M0 0C-5 6 -6 15 -4 26C0 46 9 64 22 76C44 80 66 88 82 100C90 105 97 104 100 100C84 82 67 66 51 50C34 33 17 16 0 0Z"/>
+          <clipPath id="curl-flap"><use href="#curl-shape"/></clipPath>
+          <clipPath id="curl-wall"><path d="M0 0H100V100Z"/></clipPath>
+          <filter id="curl-blur" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6"/></filter>
+          <filter id="curl-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.4"/></filter>
+          <filter id="paste" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency=".02 .16" numOctaves="3" seed="12" result="n"/>
+            <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -4 2.3" result="m"/>
+            <feComposite in="SourceGraphic" in2="m" operator="in"/>
+          </filter>
+        </defs>
+        <!-- the wall behind, shaded by the lifted sheet. Clean, like the rest of the wall: until v10 a blotched skin of
+             paste and paper was left here, which read as one more scuffed patch -->
+        <g clip-path="url(#curl-wall)">
+          <path d="M-4 -4L104 104" stroke="#000" stroke-opacity=".55" stroke-width="16" filter="url(#curl-soft)"/>
+        </g>
+        <!-- the sheet lifting off the wall before it turns over, and the curl's shadow on the print -->
+        <path d="M-14 10L0 0L100 100L90 114Q40 104 8 98Z" fill="url(#curl-lift)"/>
+        <use href="#curl-shape" fill="#000" fill-opacity=".85" transform="translate(-8 10)" filter="url(#curl-blur)"/>
+        <!-- the curl: pale unprinted back, brushed with paste, rolled on the fold and turning away at the tip -->
+        <use href="#curl-shape" fill="url(#curl-back)"/>
+        <g clip-path="url(#curl-flap)">
+          <g transform="rotate(-50 40 60)"><rect x="-40" y="0" width="180" height="120" fill="#8a7a58" opacity=".08" filter="url(#paste)"/></g>
+          <path d="M-6 30C2 50 10 66 22 76C44 80 68 90 84 102" fill="none" stroke="#5d5038" stroke-opacity=".5" stroke-width="5" filter="url(#curl-soft)"/>
+          <path d="M22 76C44 80 66 88 82 100" fill="none" stroke="#fffdf4" stroke-opacity=".55" stroke-width=".9"/>
+        </g>
+      </svg>
+    </article>
+  </div>
+
+  <aside class="sheets" aria-label="Other posters on the wall">
+    <div class="stain ply" aria-hidden="true"></div>
+    <article class="po ply">
+      <div class="in"><img src="assets/art/ply-halftone.webp" alt="" width="500" height="800"><h2><span>An icon for</span> <span>your menu bar</span></h2><i class="wrinkle"></i><i class="thru"></i></div>
+    </article>
+    <div class="stain lost" aria-hidden="true"></div>
+    <article class="po lost">
+      <div class="in"><h2><span class="big">Lost</span> <i class="frame" aria-hidden="true"></i> <span class="what">One menu bar</span></h2>
+        <p>Last seen at the top of your screen</p><i class="wrinkle"></i><i class="thru"></i></div>
+    </article>
+  </aside>
+
+  <div class="daylight" aria-hidden="true"></div>
+</main>
+
+<!-- The filters the styles above call by name. The crease map inside #warp is a small picture, written in so the filter is ready with the page. -->
+<svg class="filters" width="0" height="0" aria-hidden="true" focusable="false">
+  <!-- crease warp: the sheet's own height map displaces its print, so lines kink at each fold -->
+  <filter id="warp" x="-2%" y="-2%" width="104%" height="104%" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+    <feImage href="data:image/png;base64,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" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="h"/>
+    <feDisplacementMap in="SourceGraphic" in2="h" scale=".012" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <!-- torn paper: alpha bitten inward by fine noise, a white paper core showing along the tear -->
+  <filter id="tear" x="-3%" y="-3%" width="106%" height="106%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="4" seed="3" result="n1"/>
+    <feDisplacementMap in="SourceAlpha" in2="n1" scale="11" xChannelSelector="R" yChannelSelector="G" result="m1"/>
+    <feComposite in="SourceGraphic" in2="m1" operator="in" result="print"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".11" numOctaves="3" seed="9" result="n2"/>
+    <feDisplacementMap in="SourceAlpha" in2="n2" scale="6" xChannelSelector="G" yChannelSelector="R" result="m2"/>
+    <feComposite in="m2" in2="SourceAlpha" operator="in" result="m2in"/>
+    <feFlood flood-color="#f4efe2"/>
+    <feComposite in2="m2in" operator="in" result="core"/>
+    <feMerge><feMergeNode in="core"/><feMergeNode in="print"/></feMerge>
+  </filter>
+  <!-- a solid flood off one plate: mottled density and a little salt, far fewer holes than the type -->
+  <filter id="ink-flood" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="15" result="sp"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="3" seed="19" result="bl"/>
+    <feComposite in="sp" in2="bl" operator="arithmetic" k2=".85" k3=".15" result="mix"/>
+    <feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -20 0 0 0 16" result="salt"/>
+    <feColorMatrix in="bl" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -.6 0 0 0 1.28" result="dens"/>
+    <feComposite in="salt" in2="dens" operator="arithmetic" k1="1" result="mask"/>
+    <feComposite in="SourceGraphic" in2="mask" operator="in" result="worn"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".08" numOctaves="2" seed="6" result="edge"/>
+    <feDisplacementMap in="worn" in2="edge" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <!-- worn wood type: speckle holes and grain streaks knocked out of the ink -->
+  <filter id="ink" x="-2%" y="-4%" width="104%" height="108%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="5" result="sp"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="11" result="bl"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".008 .22" numOctaves="1" seed="8" result="gr"/>
+    <feComposite in="sp" in2="bl" operator="arithmetic" k2=".55" k3=".45" result="m1"/>
+    <feComposite in="m1" in2="gr" operator="arithmetic" k2=".84" k3=".16" result="mix"/>
+    <feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -9 0 0 0 6.05" result="mask"/>
+    <feComposite in="SourceGraphic" in2="mask" operator="in" result="worn"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="2" result="edge"/>
+    <feDisplacementMap in="worn" in2="edge" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <!-- paste wrinkles: long thin ridges where the brush pushed wet paper, as light and shade -->
+  <filter id="wrinkle" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="turbulence" baseFrequency=".013 .0021" numOctaves="1" seed="31" result="t"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="2" seed="5" result="w"/>
+    <feDisplacementMap in="t" in2="w" scale="16" xChannelSelector="R" yChannelSelector="G" result="tw"/>
+    <!-- height: flat paper, with a thin ridge wherever the noise crosses zero; a second noise keeps only some of them -->
+    <feColorMatrix in="tw" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -34 0 0 0 1" result="h"/>
+    <feTurbulence type="fractalNoise" baseFrequency=".009 .005" numOctaves="2" seed="77" result="k"/>
+    <feColorMatrix in="k" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 9 -4.3" result="km"/>
+    <feComposite in="h" in2="km" operator="in" result="hk"/>
+    <feGaussianBlur in="hk" stdDeviation=".9" result="hb"/>
+    <feDiffuseLighting in="hb" surfaceScale="1.5" diffuseConstant="1" lighting-color="#fff"><feDistantLight azimuth="205" elevation="30"/></feDiffuseLighting>
+  </filter>
+  <!-- the icon's own pass of red: solid ink, the edge a hair off true -->
+  <filter id="press" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="6" result="edge"/>
+    <feDisplacementMap in="SourceGraphic" in2="edge" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+</body>
+</html>
