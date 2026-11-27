@@ -2,6 +2,8 @@
 
 > A single icon for your menu bar.
 
+**Your hidden Mac menu bar one shortcut away**
+
 ## What it does
 
 Menu Bar Reveal is a free Mac app that shows the hidden menu bar when you press your keyboard shortcut. The bar stays until the same shortcut hides it.

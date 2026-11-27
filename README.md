@@ -45,7 +45,7 @@ npm install      # once
 npm run lint     # html-validate, stylelint, then tools/check.mjs
 ```
 
-The check covers the title, the descriptions, the share tags, both JSON-LD blocks, `index.md`, `llms.txt`, `sitemap.xml`, `robots.txt` and the 404 page. It writes nothing. It also fails if a page names a file that is not here, if a picture's name does not carry the digest of its bytes, or if the style hash in `_headers` is stale.
+The check covers the title, the headline (the page's h1, also in `index.md` and `llms.txt`), the descriptions, the share tags, both JSON-LD blocks, `index.md`, `llms.txt`, `sitemap.xml`, `robots.txt` and the 404 page. It writes nothing. It also fails if a page names a file that is not here, if a picture's name does not carry the digest of its bytes, or if the style hash in `_headers` is stale.
 
 Three things it cannot see:
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Show your hidden Mac menu bar with a shortcut | Menu Bar Reveal</title>
+<title>Your hidden Mac menu bar one shortcut away | Menu Bar Reveal</title>
 <meta name="description" content="A free, open source Mac app. Press your keyboard shortcut to show the hidden menu bar. It stays until the same shortcut hides it.">
 <link rel="canonical" href="https://menubarreveal.com/">
 <meta name="theme-color" content="#6f6a62">
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Menu Bar Reveal">
 <meta property="og:url" content="https://menubarreveal.com/">
-<meta property="og:title" content="Show your hidden Mac menu bar with a shortcut | Menu Bar Reveal">
+<meta property="og:title" content="Your hidden Mac menu bar one shortcut away | Menu Bar Reveal">
 <meta property="og:description" content="A free, open source Mac app. Press your keyboard shortcut to show the hidden menu bar. It stays until the same shortcut hides it.">
 <meta property="og:image" content="https://menubarreveal.com/og.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -23,7 +23,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A tabloid front page, Menu Bar Reveal, pasted on a painted wall in the middle of a yellow sun. The headline: SWIFT JUSTICE. Under it, a big red app icon, a bar over a down arrow, and a yellow box: GET IT ON GITHUB. A painted figure points at the page. Beside it, a small poster of a waiter serving a menu bar on his palm.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Show your hidden Mac menu bar with a shortcut | Menu Bar Reveal">
+<meta name="twitter:title" content="Your hidden Mac menu bar one shortcut away | Menu Bar Reveal">
 <meta name="twitter:description" content="A free, open source Mac app. Press your keyboard shortcut to show the hidden menu bar. It stays until the same shortcut hides it.">
 <meta name="twitter:image" content="https://menubarreveal.com/og.jpg">
 <meta name="twitter:image:alt" content="A tabloid front page, Menu Bar Reveal, pasted on a painted wall in the middle of a yellow sun. The headline: SWIFT JUSTICE. Under it, a big red app icon, a bar over a down arrow, and a yellow box: GET IT ON GITHUB. A painted figure points at the page. Beside it, a small poster of a waiter serving a menu bar on his palm.">
@@ -134,7 +134,7 @@ body {
    One painted mural, anchored top centre and scaled to cover. Phones first: the front page, then a band
    where the side sheets hang. --sheet-ar is the front page's height over its width. */
 .wall {
-  --sheet-ar: 1.4;
+  --sheet-ar: 1.32;
   --pad-t: clamp(56px, 7vw, 104px);
   --pad-b: 64px;
   --band: calc(75vw + 36px);
@@ -331,7 +331,7 @@ body {
 
 /* ---------- the front page ----------
    A red top tabloid, pasted up. --icon-* is where the app icon sits (in the photo); --read-* is the
-   standfirst's box, which also tells the sheet where to hold its creases back. */
+   price line's box, which also tells the sheet where to hold its creases back. */
 .post {
   position: relative;
   z-index: 2;
@@ -389,7 +389,7 @@ body {
   opacity: .42;
   pointer-events: none;
 }
-/* the paper's creases, as light: held back over the icon (a fresh pass of red, laid on last) and over the standfirst */
+/* the paper's creases, as light: held back over the icon (a fresh pass of red, laid on last) and over the price */
 .sheet::after {
   --calm:
     linear-gradient(rgba(0, 0, 0, .72), rgba(0, 0, 0, .72)) var(--icon-l) var(--icon-t) / var(--icon-w) var(--icon-w) no-repeat,
@@ -457,16 +457,44 @@ body {
   white-space: nowrap;
   filter: url(#ink-flood);
 }
-/* the splash: "Swift" over "justice". The long word fills the measure; the short one, leaning like the
-   masthead, has the height that is left, and the streaks behind it fill its line. Capitals are .867em tall
-   and start .056em below the line box top, which keeps the three gaps round the two lines even. */
+/* Anton's capitals are .867em tall and start .056em below the line box top: each line's top below is set so
+   the gaps between the capitals of the kicker and the three lines of the splash are even. */
+/* the kicker: "Swift justice", leaning like the masthead, red streaks behind it filling the measure. The words
+   stay in ink: red on the paper is under 4.5:1 at a phone's size. */
+.kicker {
+  --streak: linear-gradient(var(--red), var(--red));
+  position: absolute;
+  top: 19.94cqi;
+  right: 5.2cqi;
+  left: 5.3cqi;
+  display: flex;
+  color: var(--ink);
+  font: 400 6.4cqi/1 var(--display);
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: skewX(-11deg);
+  filter: url(#ink-flood);
+}
+.kicker::before {
+  content: "";
+  flex: 1;
+  height: .867em;
+  margin: .056em 1.8cqi 0 0;
+  background:
+    var(--streak) 100% 5% / 100% 17% no-repeat,
+    var(--streak) 100% 37% / 58% 10% no-repeat,
+    var(--streak) 100% 63% / 82% 14% no-repeat,
+    var(--streak) 100% 93% / 40% 9% no-repeat;
+}
+/* the splash: the headline, three lines, each set to fill the measure. The middle one, the thing itself, is
+   the biggest words on the sheet. */
 .splash {
   font: inherit;
 }
 .splash span {
   position: absolute;
-  right: 0;
-  left: 0;
+  right: 3.5cqi;
+  left: 3.5cqi;
   display: block;
   color: var(--ink);
   font-family: var(--display);
@@ -478,30 +506,18 @@ body {
   filter: url(#ink-flood);
 }
 .splash .l1 {
-  top: 20.25cqi;
-  right: 5.2cqi;
-  left: 3.5cqi;
-  font-size: 19.26cqi;
-  text-align: right;
-  transform: skewX(-11deg);
-}
-.splash .l1::before {
-  --streak: linear-gradient(var(--ink), var(--ink));
-  content: "";
-  position: absolute;
-  top: .056em;
-  left: 1.8cqi;
-  width: calc(100% - 2.2em - 1.8cqi);
-  height: .867em;
-  background:
-    var(--streak) 100% 5% / 100% 17% no-repeat,
-    var(--streak) 100% 37% / 58% 10% no-repeat,
-    var(--streak) 100% 63% / 82% 14% no-repeat,
-    var(--streak) 100% 93% / 40% 9% no-repeat;
+  top: 27.05cqi;
 }
 .splash .l2 {
-  top: 39.35cqi;
-  font-size: 32.3cqi;
+  top: 43.02cqi;
+}
+.splash .l1,
+.splash .l2 {
+  font-size: 16cqi;
+}
+.splash .l3 {
+  top: 59.22cqi;
+  font-size: 12cqi;
 }
 
 /* the front page photo: a stage plate and its crowd, cropped to the pool of light; the icon is printed over it */
@@ -541,17 +557,21 @@ body {
   fill: var(--red);
 }
 
-/* the standfirst: the one thing the page says in plain type. Tinos has Times's measure. */
-.standfirst {
+/* the price: one word in plain type by the puff. Tinos has Times's measure. */
+.price {
   position: absolute;
   top: var(--read-t);
   left: var(--read-l);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   width: var(--read-w);
-  max-height: var(--read-h);
+  height: var(--read-h);
   font-family: Tinos, "Times New Roman", Times, serif;
+  font-size: 10cqi;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 /* the call to action: the page's one link, holding two printed things, the icon and the yellow puff.
@@ -686,7 +706,7 @@ body {
 }
 
 /* ---------- phones ----------
-   The puff stands beside the photo; the standfirst runs the full measure under them. The two side sheets
+   The puff stands beside the photo and the price under the puff. The two side sheets
    hang in the band under the front page, placed in screen units. */
 @media (width < 700px) {
   /* A phone sees only the middle of the wall, so its wall picture is that strip alone: the centre 692 of the
@@ -701,13 +721,10 @@ body {
     background-repeat: no-repeat;
   }
   .front {
-    --read-l: 3.5cqi;
-    --read-t: 117.4cqi;
-    --read-w: 93cqi;
+    --read-l: 49.7cqi;
+    --read-t: 114cqi;
+    --read-w: 46.8cqi;
     --read-h: 14cqi;
-  }
-  .standfirst {
-    font-size: 5.9cqi;
   }
   .puff {
     top: 72.3cqi;
@@ -743,7 +760,7 @@ body {
 }
 
 /* ---------- wide screens ----------
-   The whole front page fits the first screen, --gap of wall above and below; the standfirst and the puff
+   The whole front page fits the first screen, --gap of wall above and below; the price and the puff
    stand beside the photo, so the sheet is shorter. The mural is the one painted with its sun at y 450;
    where the screen is short for its width it slides up by --ms, so the sun stays behind the middle of the
    front page. The page stops 72 wall px short of the mural's foot, above its strip of bare block. */
@@ -775,9 +792,6 @@ body {
   }
   .halo {
     right: -16px;
-  }
-  .standfirst {
-    font-size: 4.2cqi;
   }
   .puff {
     top: 88cqi;
@@ -820,7 +834,8 @@ body {
       <div class="sheet">
         <p class="mast"><span>Menu Bar Reveal</span></p>
         <p class="strap">A single icon for your menu bar</p>
-        <h1 id="title" class="splash"><span class="l1">Swift</span> <span class="l2">justice</span></h1>
+        <p class="kicker">Swift justice</p>
+        <h1 id="title" class="splash"><span class="l1">Your hidden</span> <span class="l2">Mac menu bar</span> <span class="l3">one shortcut away</span></h1>
         <div class="photo" role="img" aria-label="The Menu Bar Reveal icon, a white bar over a down arrow on red, huge on a stage above a crowd with phones raised.">
           <div class="stage"></div>
           <svg class="crowd" viewBox="0 0 1000 1400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
@@ -829,7 +844,7 @@ body {
             <rect class="tiny" x="655.8" y="920.2" width="16" height="16" rx="3.6" transform="rotate(5.7 663.8 928.2)"/>
           </svg>
         </div>
-        <p class="standfirst">Your hidden Mac menu bar, on one shortcut. Free.</p>
+        <p class="price">Free.</p>
         <svg class="newsprint head" viewBox="0 0 1000 130" preserveAspectRatio="none" aria-hidden="true" focusable="false">
           <path class="ears" d="M610 57h62m7 0h38m7 0h76M664 74h44m7 0h85M700 91h100"/>
         </svg>

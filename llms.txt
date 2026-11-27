@@ -4,7 +4,7 @@
 
 ## Links
 
-- [Web page](https://menubarreveal.com/): the poster.
+- [Web page](https://menubarreveal.com/): the poster, headlined "Your hidden Mac menu bar one shortcut away".
 - [Product facts](https://menubarreveal.com/index.md): what it does, the shortcut, compatibility, install, price and privacy.
 - [Latest release](https://github.com/srobinson/menubar-reveal/releases/latest): the DMG and its release notes.
 - [README](https://github.com/srobinson/menubar-reveal#readme): install and the first open.

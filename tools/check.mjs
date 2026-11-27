@@ -20,6 +20,8 @@ const head = page.slice(0, page.indexOf('</head>'));
 const once = (where, found, want) => (found.length === 1 ? same(where, found[0], want) : fails.push(`${where}: expected once, found ${found.length} times`));
 const meta = (name) => [...head.matchAll(/<meta\s+(?:name|property)="([^"]+)"\s+content="([^"]*)"/g)].filter((m) => m[1] === name).map((m) => unescape(m[2]));
 once('index.html <title>', [...head.matchAll(/<title>([\s\S]*?)<\/title>/g)].map((m) => unescape(m[1])), facts.title);
+holds('facts.json title: the headline', facts.title, facts.headline);
+once('index.html <h1>', [...page.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g)].map((m) => unescape(m[1].replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim()), facts.headline);
 once('index.html canonical link', [...head.matchAll(/<link rel="canonical" href="([^"]*)"/g)].map((m) => m[1]), facts.url);
 for (const [name, want] of Object.entries({
   description: facts.summary, 'og:description': facts.summary, 'twitter:description': facts.summary,
@@ -48,6 +50,7 @@ holds('index.html styles: the page background (html)', page, `html {\n  backgrou
 const md = read('index.md');
 same('index.md heading', md.split('\n')[0], `# ${facts.name}`);
 holds('index.md tagline', md, `\n> ${facts.tagline}\n`);
+holds('index.md headline', md, `\n**${facts.headline}**\n`);
 holds('index.md download link', md, `(${facts.downloadUrl})`);
 holds('index.md version', md, `version ${facts.version} `);
 holds('index.md release notes link', md, `(${facts.repo}/releases/tag/v${facts.version})`);
@@ -57,6 +60,7 @@ holds('index.md web page link', md, `(${facts.url})`);
 const llms = read('llms.txt');
 same('llms.txt heading', llms.split('\n')[0], `# ${facts.name}`);
 holds('llms.txt summary', llms, `\n> ${facts.summary}\n`);
+holds('llms.txt headline', llms, `"${facts.headline}"`);
 holds('llms.txt web page link', llms, `(${facts.url})`);
 holds('llms.txt product facts link', llms, `(${facts.url}index.md)`);
 once('sitemap.xml loc', [...read('sitemap.xml').matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => m[1]), facts.url);
