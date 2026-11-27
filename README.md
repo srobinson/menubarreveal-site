@@ -50,7 +50,7 @@ The check covers the title, the headline (the page's h1, also in `index.md` and 
 Three things it cannot see:
 
 - If you edit the `<style>` block, run `npm run csp`. The Content Security Policy allows the block by the sha256 of its text, and that command writes the new hash into `_headers`.
-- `og.jpg` is a picture of the first screen. If the first screen changes, render it again (1600x840 at 2x, scaled to 1200x630) and rewrite its alt text in `facts.json`.
+- `og.jpg` is a picture of the first screen. If the first screen changes, render it again (1600x840 at 2x, scaled to 1200x630, a progressive JPEG at quality 84) and rewrite its alt text in `facts.json`.
 - `sitemap.xml` carries a `lastmod` date. Change it when the page changes in a way a search engine should notice.
 
 To look at the site as it will be served, headers included:
